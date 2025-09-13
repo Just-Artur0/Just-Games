@@ -11,3 +11,8 @@
 - Art - Used Gimp + Photopea, Just-Artur0
 - Images from Netflix
 - Music - Netflix (Jung Jae-il)
+# Packaging
+- To Package the game
+- Get Pyinstaller
+- Go to the game directory and do pyinstaller main.py
+- Or Create a main.spec file
