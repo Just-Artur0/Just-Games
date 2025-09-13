@@ -1,4 +1,4 @@
-# Just-Games
+# Just Games
 A Squid Game Recreation in Pygame
 # Credits + Contributors
 - Programming - Just-Artur0
