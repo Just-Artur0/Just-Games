@@ -16,3 +16,8 @@
 - Get Pyinstaller
 - Go to the game directory and do pyinstaller main.py
 - Or Create a main.spec file
+# Controls
+- LEFT KEY - left
+- RIGHT KEY - right
+- SPACE - action
+- MOUSELEFTBUTTON - select
