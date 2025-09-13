@@ -4,3 +4,4 @@ A Squid Game Recreation in Pygame
 - Programming - Just-Artur0
 - Art - Used Gimp + Photopea, Just-Artur0
 - Images from Netflix
+- Music - Netflix (Jung Jae-il)
