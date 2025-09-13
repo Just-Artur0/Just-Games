@@ -7,7 +7,7 @@
 - All Assets used are from the hit Netflix show Squid Game
 - FAIR USE: *Copyright Disclaimer Under Section 107 of the Copyright Act 1976, allowance is made for "fair use" for purposes such as criticism, comment, news reporting, teaching, scholarship, and research. Fair use is a use permitted by copyright statute that might otherwise be infringing. Non-profit, educational or personal use tips the balance in favor of fair use. NO COPYRIGHT INFRINGEMENT INTENDED. All rights belong to their respective owners.
 # Credits + Contributors
-- Programming - Just-Artur0
+- Programming - Just-Artur0 (help make and you could get added!!)
 - Art - Used Gimp + Photopea, Just-Artur0
 - Images from Netflix
 - Music - Netflix (Jung Jae-il)
