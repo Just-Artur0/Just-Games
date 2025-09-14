@@ -9,7 +9,7 @@
 # Credits + Contributors
 - Programming - Just-Artur0 (help make and you could get added!!)
 - Art - Used Gimp + Photopea, Just-Artur0
-- Images from Netflix
+- Images from Netflix, Compressed with https://tinyjpg.com/ and https://tinypng.com/
 - Music - Netflix (Jung Jae-il)
 # Packaging
 - To Package the game
