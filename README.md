@@ -15,7 +15,7 @@
 - To Package the game
 - Get Pyinstaller
 - Go to the game directory and do pyinstaller main.py
-- Or Create a main.spec file
+- Or Create a main.spec file and do pyinstaller main.spec
 # Controls
 - LEFT KEY - left
 - RIGHT KEY - right
