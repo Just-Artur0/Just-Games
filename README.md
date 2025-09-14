@@ -1,5 +1,6 @@
 # Just Games
 - A Squid Game Recreation in Pygame
+- Play on WEB: https://just-artur.itch.io/justgames
 - Season 1 Games - (storymode: Ddakji), RedLight GreenLight, Dalgona, (storymode: Lights Out), Tug-of-War, Marbles, Glass Bridge, Squid Game
 - Season 2 Games - RedLight GreenLight, Six Legged Pentathlon (Ddakji, Flying Stone, Gonggi, Spinning Top, Jegi), Mingle
 - More Season 3 Games Coming Soon (Check back every once a week or so)
