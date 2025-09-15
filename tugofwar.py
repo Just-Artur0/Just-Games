@@ -21,7 +21,7 @@ def tugofwar(freeplay=0):
     player1.team = choice(['left', 'right'])
     bot_team = 'right' if player1.team == 'left' else 'left'
     last_bot_click = pygame.time.get_ticks()
-    bot_click_interval = 500
+    bot_click_interval = 450
     bot_sprite_id = randint(0, 22)
     bot_image = all_player_images[bot_sprite_id]
     font = pygame.font.Font(font_path, 60)
@@ -36,12 +36,12 @@ def tugofwar(freeplay=0):
         clock.tick(15)
         game_surface.blit(background_tugofwar_image, (0, 0))
         # Draw Tug Button
-        mx, my = scale_mouse_pos(*event.pos)
+        mx, my = scale_mouse_pos(*pygame.mouse.get_pos())
         if button_rect.collidepoint((mx, my)):
             color = button_hover_color
         else:
             color = button_color
-        pygame.draw.rect(window, color, button_rect)
+        pygame.draw.rect(game_surface, color, button_rect)
         text = font4.render("TUG!", True, (0, 0, 0))
         game_surface.blit(text, (button_rect.x + 15, button_rect.y + 15))
         for event in pygame.event.get():
@@ -100,4 +100,5 @@ def tugofwar(freeplay=0):
             sleep(3)
             from menus import mainmenu
             return mainmenu()
+
         render_to_screen()
