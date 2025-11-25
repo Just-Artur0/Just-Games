@@ -3,6 +3,7 @@
 - Play on WEB: https://just-artur.itch.io/justgames
 - Season 1 Games - (storymode: Ddakji), RedLight GreenLight, Dalgona, (storymode: Lights Out), Tug-of-War, Marbles, Glass Bridge, Squid Game
 - Season 2 Games - RedLight GreenLight, Six Legged Pentathlon (Ddakji, Flying Stone, Gonggi, Spinning Top, Jegi), Mingle
+- Season 3 Games - Keys and Knives (Hide n Seek)
 - More Season 3 Games Coming Soon (Check back every once a week or so)
 - For updates about the game Join the Discord Server (212 members): https://discord.gg/tkrzySghXj
 - All Assets used are from the hit Netflix show Squid Game
