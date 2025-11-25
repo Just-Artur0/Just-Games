@@ -2,27 +2,22 @@ import pygame
 from assets import marbles_theme, background_marbles1_image
 from player import player1, reset_player
 from intro import play_intro_and_show_subtitles
-from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, window, scale_mouse_pos, game_surface
+from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, scale_mouse_pos, game_surface
 from random import choice, randint
-from os.path import join
+from main import font_path
 from sys import exit
 from time import sleep
 from button import draw_button
 from player import Player
 def marbles(freeplay=0):
-    global window, is_fullscreen
-    pygame.font.init()
     reset_player()
     play_intro_and_show_subtitles(4)
-    font_path = join("Fonts", "Game Of Squids.ttf")
     marbles_theme.play(-1)
-    # Bet buttons (1-9)
     bet_buttons = []
     for i in range(1, 10):
         x = 100 + ((i - 1) % 5) * 90
         y = 400 if i <= 5 else 480
         bet_buttons.append((pygame.Rect(x, y, 80, 60), str(i)))
-    # Guess buttons
     odd_button = pygame.Rect(700, 400, 150, 60)
     even_button = pygame.Rect(700, 480, 150, 60)
     font = pygame.font.Font(font_path, 40)
@@ -56,15 +51,16 @@ def marbles(freeplay=0):
             game_surface.blit(text, ((game_surface.get_width() - text.get_width()) // 2, (game_surface.get_height() - text.get_height()) // 2))
             render_to_screen()
             sleep(5)
-            if freeplay == 0:
-                from lobby import lobby
-                lobby("Glass Stepping Stones is Next!", duration=20, lights=0)
-                from glassbridge import glass_bridge
-                return glass_bridge(0)
-            elif freeplay == 1:
-                marbles_theme.stop()
-                from menus import mainmenu
-                return mainmenu()
+            match freeplay:
+                case 0:
+                    from lobby import lobby
+                    lobby("Glass Stepping Stones is Next!", duration=20, lights=0)
+                    from glassbridge import glass_bridge
+                    return glass_bridge(0)
+                case 1:
+                    marbles_theme.stop()
+                    from menus import mainmenu
+                    return mainmenu()
         game_surface.blit(font.render(f"Your marbles: {player1.marbles}/20", True, (255, 255, 0)), (100, 100))
         # Display instructions and state
         if not submitted_bet:
@@ -84,33 +80,33 @@ def marbles(freeplay=0):
         render_to_screen()
         # Handle input
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif event.type == pygame.VIDEORESIZE:
-                handle_resize(event.w, event.h)
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                mx, my = scale_mouse_pos(*event.pos)
-                if submitted_bet and not submitted_guess and player1.marbles_turn:
-                    if odd_button.collidepoint(mx, my):
-                        guess = "odd"
-                    elif even_button.collidepoint(mx, my):
-                        guess = "even"
-                    if guess:
-                        player1.marbles_guess = guess
-                        submitted_guess = True
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_F11:
-                    toggle_fullscreen()
-                elif event.key == pygame.K_ESCAPE and is_fullscreen:
-                    toggle_fullscreen()
-                elif not submitted_bet and event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
-                    bet = int(event.unicode)
-                    if bet <= player1.marbles:
-                        player1.marbles_bet = bet
-                        submitted_bet = True
-                        player1.marbles_turn = True
-                        player2.marbles_bet = randint(1, min(player2.marbles, 9))
+            match event.type: 
+                case pygame.QUIT:
+                    exit()
+                case pygame.VIDEORESIZE:
+                    handle_resize(event.w, event.h)
+                case pygame.MOUSEBUTTONDOWN:
+                    mx, my = scale_mouse_pos(*event.pos)
+                    if submitted_bet and not submitted_guess and player1.marbles_turn:
+                        if odd_button.collidepoint(mx, my):
+                            guess = "odd"
+                        elif even_button.collidepoint(mx, my):
+                            guess = "even"
+                        if guess:
+                            player1.marbles_guess = guess
+                            submitted_guess = True
+                case pygame.KEYDOWN:
+                    if event.key == pygame.K_F11:
+                        toggle_fullscreen()
+                    elif event.key == pygame.K_ESCAPE and is_fullscreen:
+                        toggle_fullscreen()
+                    elif not submitted_bet and event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
+                        bet = int(event.unicode)
+                        if bet <= player1.marbles:
+                            player1.marbles_bet = bet
+                            submitted_bet = True
+                            player1.marbles_turn = True
+                            player2.marbles_bet = randint(1, min(player2.marbles, 9))
         # After both player and bot bet + guess
         if submitted_bet and submitted_guess and not showing_result:
             # Bot guess logic (random)

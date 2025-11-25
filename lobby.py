@@ -1,20 +1,17 @@
 import pygame
-from os.path import join
+from main import font_path
 from player import Player, player1, player_image
 from random import randint, random, choice
 from time import time
 from math import sin, pi
 from sys import exit
-from assets import all_player_images, dormitory_image, knife_image, doll_sound, money, maintheme, dorm
-from resize import window, is_fullscreen, toggle_fullscreen, handle_resize, render_to_screen, game_surface
+from assets import all_player_images, dormitory_image, knife_image, money, dorm
+from resize import is_fullscreen, toggle_fullscreen, handle_resize, render_to_screen, game_surface
 def lobby(message="Waiting for next game...", duration=20, lights=0):
-    global player_image, window, is_fullscreen
-    pygame.font.init()
-    doll_sound.stop()
+    global player_image
     money.play()
     player1.x = 0
     player1.y = 620
-    font_path = join("Fonts", "Game Of Squids.ttf")
     font2 = pygame.font.Font(font_path, 36)
     small_font = pygame.font.Font(font_path, 24)
     start_time = time()
@@ -59,16 +56,16 @@ def lobby(message="Waiting for next game...", duration=20, lights=0):
             brightness_surface.fill((0, 0, 0))  # Black overlay
         game_surface.blit(dormitory_image, (0, 0))
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif event.type == pygame.VIDEORESIZE:
-                handle_resize(event.w, event.h)
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_F11:
-                    toggle_fullscreen()
-                elif event.key == pygame.K_ESCAPE and is_fullscreen:
-                    toggle_fullscreen()
+            match event.type: 
+                case pygame.QUIT:
+                    exit()
+                case pygame.VIDEORESIZE:
+                    handle_resize(event.w, event.h)
+                case pygame.KEYDOWN:
+                    if event.key == pygame.K_F11:
+                        toggle_fullscreen()
+                    elif event.key == pygame.K_ESCAPE and is_fullscreen:
+                        toggle_fullscreen()
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
             last_key_pressed = "right"
@@ -201,11 +198,7 @@ def lobby(message="Waiting for next game...", duration=20, lights=0):
             money.stop()
             break
 def waiting(story=0):
-    global window, is_fullscreen
-    pygame.font.init()
-    maintheme.stop()
     dorm.play(-1)
-    font_path = join("Fonts", "Game Of Squids.ttf")
     waiting_font = pygame.font.Font(font_path, 60)
     COUNTDOWN_DURATION = 30
     start_time = time()
@@ -215,16 +208,16 @@ def waiting(story=0):
         elapsed_time = time() - start_time
         countdown_remaining = max(0, COUNTDOWN_DURATION - int(elapsed_time))
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif event.type == pygame.VIDEORESIZE:
-                handle_resize(event.w, event.h)
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_F11:
-                    toggle_fullscreen()
-                elif event.key == pygame.K_ESCAPE and is_fullscreen:
-                    toggle_fullscreen()
+            match event.type:
+                case pygame.QUIT:
+                    exit()
+                case pygame.VIDEORESIZE:
+                    handle_resize(event.w, event.h)
+                case pygame.KEYDOWN:
+                    if event.key == pygame.K_F11:
+                        toggle_fullscreen()
+                    elif event.key == pygame.K_ESCAPE and is_fullscreen:
+                        toggle_fullscreen()
         game_surface.blit(dormitory_image, (0, 0))
         if countdown_remaining <= 0 and story == 0:
             from redlight import redlight

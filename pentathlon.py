@@ -11,9 +11,9 @@ from player import player1, player_image, sprite_id, reset_player
 from main import font_path
 from sys import exit
 from intro import play_intro_and_show_subtitles 
-from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, window, game_surface, scale_mouse_pos
+from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface, scale_mouse_pos
 def six_legged_pentathlon(freeplay=0):
-    global player_image, sprite_id, window, is_fullscreen
+    global sprite_id, player_image
     reset_player()
     play_intro_and_show_subtitles(8)
     if freeplay == 1:
@@ -134,18 +134,19 @@ def six_legged_pentathlon(freeplay=0):
         BotPlayer(randint(0, 22), 0, 0),
         BotPlayer(randint(0, 22), 0, 0)
     ]
-    if sprite_id == 1:
-        PENTATHLON_DURATION = 311
-    elif sprite_id == 12:
-        PENTATHLON_DURATION = 311
-    elif sprite_id == 13:
-        PENTATHLON_DURATION = 311
-    elif sprite_id == 14:
-        PENTATHLON_DURATION = 311
-    elif sprite_id == 19:
-        PENTATHLON_DURATION = 311
-    else:
-        PENTATHLON_DURATION = 308
+    match sprite_id: 
+        case 1:
+            PENTATHLON_DURATION = 311
+        case 12:
+            PENTATHLON_DURATION = 311
+        case 13:
+            PENTATHLON_DURATION = 311
+        case 14:
+            PENTATHLON_DURATION = 311
+        case 19:
+            PENTATHLON_DURATION = 311
+        case _:
+            PENTATHLON_DURATION = 308
     if PENTATHLON_DURATION == 311:
         pentathlon_channel.play(pentathlon_champion_theme, -1)
     else:
@@ -340,16 +341,17 @@ def six_legged_pentathlon(freeplay=0):
                     sprite = pygame.transform.scale(all_player_images[bot.sprite_id], scale)
                     game_surface.blit(sprite, (bot.x, bot.y))
                 # Choose which gonggi set to use based on level
-                if gonggi_level == 1:
-                    current_gonggi = level1_gonggi
-                elif gonggi_level == 2:
-                    current_gonggi = level2_gonggi
-                elif gonggi_level == 3:
-                    current_gonggi = level3_gonggi
-                elif gonggi_level == 4:
-                    current_gonggi = level4_gonggi
-                elif gonggi_level == 5:
-                    current_gonggi = level5_gonggi
+                match gonggi_level: 
+                    case 1:
+                        current_gonggi = level1_gonggi
+                    case 2:
+                        current_gonggi = level2_gonggi
+                    case 3:
+                        current_gonggi = level3_gonggi
+                    case 4:
+                        current_gonggi = level4_gonggi
+                    case 5:
+                        current_gonggi = level5_gonggi
                 for gonggi in current_gonggi:
                     # Create rect for collision detection
                     gonggi["rect"] = pygame.Rect(gonggi["x"], gonggi["y"], 30, 30)
@@ -368,146 +370,151 @@ def six_legged_pentathlon(freeplay=0):
                 level_text = f"Level {gonggi_level} - Progress: {num_of_gonggi}/{rounds_to_complete}"
                 level_surface = instruction_font.render(level_text, True, (0, 0, 255))
                 game_surface.blit(level_surface, (500, 150))
-                if gonggi_state == "waiting":
-                    if gonggi_level == 1:
-                        instruction = "Level 1: Click a stone to toss it up"
-                    elif gonggi_level == 2:
-                        instruction = "Level 2: Click a stone to toss it up"
-                    elif gonggi_level == 3:
-                        instruction = "Level 3: Click a stone to toss it up"
-                    elif gonggi_level == 4:
-                        instruction = "Level 4: Click a stone to toss it up"
-                    elif gonggi_level == 5:
-                        instruction = "Level 5: Press Space To Catch"
-                    instruction_surface = instruction_font.render(instruction, True, (255, 0, 0))
-                    game_surface.blit(instruction_surface, (500, 200))
-                elif gonggi_state == "stone_in_air":
-                    time_left = toss_duration - (time() - tossed_stone_start_time)
-                    if gonggi_level == 5:
-                        time_left = 1.5 - (time() - tossed_stone_start_time)
-                    if time_left > 0:
-                        if gonggi_level == 1:
-                            instruction = f"Pick up ONE stone! Time: {time_left:.1f}s"
-                        elif gonggi_level == 2:
-                            instruction = f"Pick up TWO stones! Time: {time_left:.1f}s"
-                        elif gonggi_level == 3:
-                            instruction = f"Pick up THREE stones! Time: {time_left:.1f}s"
-                        elif gonggi_level == 4:
-                            instruction = f"Pick up FOUR stones! Time: {time_left:.1f}s"
-                        elif gonggi_level == 5:
-                            instruction = f"Time: {time_left:.1f}s"
-                        instruction_surface = instruction_font.render(instruction, True, (0, 255, 0))
+                match gonggi_state: 
+                    case "waiting":
+                        match gonggi_level:
+                            case 1:
+                                instruction = "Level 1: Click a stone to toss it up"
+                            case 2:
+                                instruction = "Level 2: Click a stone to toss it up"
+                            case 3:
+                                instruction = "Level 3: Click a stone to toss it up"
+                            case 4:
+                                instruction = "Level 4: Click a stone to toss it up"
+                            case 5:
+                                instruction = "Level 5: Press Space To Catch"
+                        instruction_surface = instruction_font.render(instruction, True, (255, 0, 0))
                         game_surface.blit(instruction_surface, (500, 200))
-                        if time_left <= 0:
-                            if gonggi_level == 5 and not player1.gonggi_caught:
-                                num_of_gonggi = 0
-                                gonggi_state = "stone_in_air"  # Level 5 starts with stones in air
-                                tossed_stone_start_time = time()
-                                for stone in level5_gonggi:
-                                    stone["y"] = 200
-                                    stone["airborne"] = True
-                                    stone["vy"] = 0 
-                            if airborne_stone:
-                                airborne_stone["vy"] = 0
-                                airborne_stone["airborne"] = True
-                                gonggi_state = "catching"
-                    else:
-                        gonggi_state = "catching"
-                elif gonggi_state == "catching":
-                    instruction = "Waiting..."
-                    instruction_surface = instruction_font.render(instruction, True, (255, 255, 0))
-                    game_surface.blit(instruction_surface, (500, 200))
-                    # Check if airborne stone landed
-                    if airborne_stone and not airborne_stone.get("airborne", False):
-                        # Check success/failure based on level
-                        if gonggi_level == 1:
-                            stones_needed = 1
-                            rounds_to_complete = 4  # Level 1: need 4 rounds of picking 1 stone each
-                        elif gonggi_level == 2:
-                            stones_needed = 2
-                            rounds_to_complete = 2  # Level 2: need 2 rounds of picking 2 stones each
-                        elif gonggi_level == 3:
-                            # Level 3 special logic: Round 1 = pick 3, Round 2 = pick 1
-                            if num_of_gonggi == 0:
-                                stones_needed = 3  # First round: pick 3 stones
-                            else:
-                                stones_needed = 1  # Second round: pick 1 stone
-                            rounds_to_complete = 2  # Level 3: 2 rounds total (3+1)
-                        elif gonggi_level == 4:
-                            stones_needed = 4
-                            rounds_to_complete = 1
-                        elif gonggi_level == 5:
-                            stones_needed = 5
-                            rounds_to_complete = 1
-                        if len(picked_stones) == stones_needed:
-                            # SUCCESS! 
-                            num_of_gonggi += 1
-                            if num_of_gonggi >= rounds_to_complete:  # Use proper completion requirement
-                                if gonggi_level == 1:
-                                    # Move to Level 2
-                                    gonggi_level = 2
-                                    num_of_gonggi = 0  # Reset progress for Level 2
-                                    gonggi_state = "waiting"
-                                    # Reset all stones to ground for Level 2
-                                    for stone in level2_gonggi:
-                                        stone["y"] = 600
-                                        stone["airborne"] = False
-                                        stone["vy"] = 0
-                                elif gonggi_level == 2:
-                                    # Move to Level 3
-                                    gonggi_level = 3
-                                    num_of_gonggi = 0
-                                    gonggi_state = "waiting"
-                                    for stone in level3_gonggi:
-                                        stone["y"] = 600
-                                        stone["airborne"] = False
-                                        stone["vy"] = 0
-                                elif gonggi_level == 3:
-                                    gonggi_level = 4
-                                    num_of_gonggi = 0
-                                    gonggi_state = "waiting"
-                                    for stone in level4_gonggi:
-                                        stone["y"] = 600
-                                        stone["airborne"] = False
-                                        stone["vy"] = 0
-                                elif gonggi_level == 4:
-                                    gonggi_level = 5
+                    case "stone_in_air":
+                        time_left = toss_duration - (time() - tossed_stone_start_time)
+                        if gonggi_level == 5:
+                            time_left = 1.5 - (time() - tossed_stone_start_time)
+                        if time_left > 0:
+                            match gonggi_level: 
+                                case 1:
+                                    instruction = f"Pick up ONE stone! Time: {time_left:.1f}s"
+                                case 2:
+                                    instruction = f"Pick up TWO stones! Time: {time_left:.1f}s"
+                                case 3:
+                                    instruction = f"Pick up THREE stones! Time: {time_left:.1f}s"
+                                case 4:
+                                    instruction = f"Pick up FOUR stones! Time: {time_left:.1f}s"
+                                case 5:
+                                    instruction = f"Time: {time_left:.1f}s"
+                            instruction_surface = instruction_font.render(instruction, True, (0, 255, 0))
+                            game_surface.blit(instruction_surface, (500, 200))
+                            if time_left <= 0:
+                                if gonggi_level == 5 and not player1.gonggi_caught:
                                     num_of_gonggi = 0
                                     gonggi_state = "stone_in_air"  # Level 5 starts with stones in air
                                     tossed_stone_start_time = time()
-                                    # All stones start airborne in Level 5
                                     for stone in level5_gonggi:
                                         stone["y"] = 200
                                         stone["airborne"] = True
-                                        stone["vy"] = 0
-                            else:
-                                gonggi_state = "waiting"  # Continue current level
+                                        stone["vy"] = 0 
+                                if airborne_stone:
+                                    airborne_stone["vy"] = 0
+                                    airborne_stone["airborne"] = True
+                                    gonggi_state = "catching"
                         else:
-                            # FAILURE - didn't pick correct number of stones
+                            gonggi_state = "catching"
+                    case "catching":
+                        instruction = "Waiting..."
+                        instruction_surface = instruction_font.render(instruction, True, (255, 255, 0))
+                        game_surface.blit(instruction_surface, (500, 200))
+                        # Check if airborne stone landed
+                        if airborne_stone and not airborne_stone.get("airborne", False):
+                            # Check success/failure based on level
+                            match gonggi_level: 
+                                case 1:
+                                    stones_needed = 1
+                                    rounds_to_complete = 4  # Level 1: need 4 rounds of picking 1 stone each
+                                case 2:
+                                    stones_needed = 2
+                                    rounds_to_complete = 2  # Level 2: need 2 rounds of picking 2 stones each
+                                case 3:
+                                    # Level 3 special logic: Round 1 = pick 3, Round 2 = pick 1
+                                    if num_of_gonggi == 0:
+                                        stones_needed = 3  # First round: pick 3 stones
+                                    else:
+                                        stones_needed = 1  # Second round: pick 1 stone
+                                    rounds_to_complete = 2  # Level 3: 2 rounds total (3+1)
+                                case 4:
+                                    stones_needed = 4
+                                    rounds_to_complete = 1
+                                case 5:
+                                    stones_needed = 5
+                                    rounds_to_complete = 1
+                            if len(picked_stones) == stones_needed:
+                                # SUCCESS! 
+                                num_of_gonggi += 1
+                                if num_of_gonggi >= rounds_to_complete:  # Use proper completion requirement
+                                    match gonggi_level: 
+                                        case 1:
+                                            # Move to Level 2
+                                            gonggi_level = 2
+                                            num_of_gonggi = 0  # Reset progress for Level 2
+                                            gonggi_state = "waiting"
+                                            # Reset all stones to ground for Level 2
+                                            for stone in level2_gonggi:
+                                                stone["y"] = 600
+                                                stone["airborne"] = False
+                                                stone["vy"] = 0
+                                        case 2:
+                                            # Move to Level 3
+                                            gonggi_level = 3
+                                            num_of_gonggi = 0
+                                            gonggi_state = "waiting"
+                                            for stone in level3_gonggi:
+                                                stone["y"] = 600
+                                                stone["airborne"] = False
+                                                stone["vy"] = 0
+                                        case 3:
+                                            gonggi_level = 4
+                                            num_of_gonggi = 0
+                                            gonggi_state = "waiting"
+                                            for stone in level4_gonggi:
+                                                stone["y"] = 600
+                                                stone["airborne"] = False
+                                                stone["vy"] = 0
+                                        case 4:
+                                            gonggi_level = 5
+                                            num_of_gonggi = 0
+                                            gonggi_state = "stone_in_air"  # Level 5 starts with stones in air
+                                            tossed_stone_start_time = time()
+                                            # All stones start airborne in Level 5
+                                            for stone in level5_gonggi:
+                                                stone["y"] = 200
+                                                stone["airborne"] = True
+                                                stone["vy"] = 0
+                                else:
+                                    gonggi_state = "waiting"  # Continue current level
+                            else:
+                                # FAILURE - didn't pick correct number of stones
+                                if gonggi_level != 5:
+                                    pass_fail_state = "fail"
+                                    pass_fail_start = time()
+                                    pentathlon_channel.pause()
+                                    fail_sound.play()
+                                    gonggi_state = "waiting"
+                                    num_of_gonggi = 0
+                                    for stone in current_gonggi:
+                                        stone["y"] = 600
+                                        stone["airborne"] = False
+                                        stone["vy"] = 0
+                                elif gonggi_level == 5:
+                                    num_of_gonggi = 0
+                                    gonggi_state = "stone_in_air"  # Level 5 starts with stones in air
+                                    tossed_stone_start_time = time()
+                                    for stone in level5_gonggi:
+                                        stone["y"] = 200
+                                        stone["airborne"] = True
+                                        stone["vy"] = 0 
+                            # Reset for next round
                             if gonggi_level != 5:
-                                pass_fail_state = "fail"
-                                pass_fail_start = time()
-                                pentathlon_channel.pause()
-                                fail_sound.play()
-                                gonggi_state = "waiting"
-                                num_of_gonggi = 0
-                                for stone in current_gonggi:
-                                    stone["y"] = 600
-                                    stone["airborne"] = False
-                                    stone["vy"] = 0
-                            elif gonggi_level == 5:
-                                num_of_gonggi = 0
-                                gonggi_state = "stone_in_air"  # Level 5 starts with stones in air
-                                tossed_stone_start_time = time()
-                                for stone in level5_gonggi:
-                                    stone["y"] = 200
-                                    stone["airborne"] = True
-                                    stone["vy"] = 0 
-                        # Reset for next round
-                        if gonggi_level != 5:
-                            airborne_stone = None
-                            picked_stones = []
-                            tossed_stone_start_time = None
+                                airborne_stone = None
+                                picked_stones = []
+                                tossed_stone_start_time = None
         elif gonggi_timer_start is not None and not spinning_processed:
             game_surface.blit(walking_image, (0, 0))
             if not pygame.mixer.Channel(0).get_busy() and not one_two_sound_played:
@@ -616,75 +623,77 @@ def six_legged_pentathlon(freeplay=0):
                 game_surface.blit(win_text, (game_surface.get_width() // 2 - win_text.get_width() // 2, 600))
                 render_to_screen()
                 sleep(3)
-                from menus import mainmenu
-                if freeplay == 1:
-                    return mainmenu()
-                elif freeplay == 0:
-                    from lobby import lobby
-                    lobby("Get Ready for Mingle!", 20, 0)
-                    from mingle import mingle
-                    return mingle(0)
+                match freeplay: 
+                    case 1:
+                        from menus import mainmenu
+                        return mainmenu()
+                    case 0:
+                        from lobby import lobby
+                        lobby("Get Ready for Mingle!", 20, 0)
+                        from mingle import mingle
+                        return mingle(0)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif event.type == pygame.VIDEORESIZE:
-                handle_resize(event.w, event.h)
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not ddakji_processed and ddakji_phase:
-                    space_held = True
-                elif event.key == pygame.K_SPACE and not spinning_processed and spinning_phase:
-                    space_held = True
-                elif event.key == pygame.K_F11:
-                    toggle_fullscreen()
-                elif event.key == pygame.K_ESCAPE and is_fullscreen:
-                    toggle_fullscreen()
-            elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_SPACE:
-                    if not ddakji_processed and ddakji_phase:
-                        space_held = False
-                        if power_level >= 70 and power_level <= 80:
-                            player1.pentathlon_ddakji_flipped = True
-                        else:
-                            pass_fail_state = "fail"
-                            pass_fail_start = time()
-                            pentathlon_channel.pause()
-                            fail_sound.play()
-                        # Reset power after action
-                        power_level = 0
-                    elif not spinning_processed and spinning_phase:
-                        space_held = False
-                        if power_level >= 50 and power_level <= 60:
-                            player1.spinning = True
-                        else:
-                            pre_result_state = "fail"
-                            pre_result_start = time()
-                            pentathlon_channel.pause()
-                        # Reset power after action
-                        power_level = 0
-            elif event.type == pygame.MOUSEBUTTONDOWN and not gonggi_processed and gonggi_phase:
+            match event.type: 
+                case pygame.QUIT:
+                    exit()
+                case pygame.VIDEORESIZE:
+                    handle_resize(event.w, event.h)
+                case pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE and not ddakji_processed and ddakji_phase:
+                        space_held = True
+                    elif event.key == pygame.K_SPACE and not spinning_processed and spinning_phase:
+                        space_held = True
+                    elif event.key == pygame.K_F11:
+                        toggle_fullscreen()
+                    elif event.key == pygame.K_ESCAPE and is_fullscreen:
+                        toggle_fullscreen()
+                case pygame.KEYUP:
+                    if event.key == pygame.K_SPACE:
+                        if not ddakji_processed and ddakji_phase:
+                            space_held = False
+                            if power_level >= 70 and power_level <= 80:
+                                player1.pentathlon_ddakji_flipped = True
+                            else:
+                                pass_fail_state = "fail"
+                                pass_fail_start = time()
+                                pentathlon_channel.pause()
+                                fail_sound.play()
+                            # Reset power after action
+                            power_level = 0
+                        elif not spinning_processed and spinning_phase:
+                            space_held = False
+                            if power_level >= 50 and power_level <= 60:
+                                player1.spinning = True
+                            else:
+                                pre_result_state = "fail"
+                                pre_result_start = time()
+                                pentathlon_channel.pause()
+                            # Reset power after action
+                            power_level = 0
+            if event.type == pygame.MOUSEBUTTONDOWN and not gonggi_processed and gonggi_phase:
                 mx, my = scale_mouse_pos(*event.pos)
-                if gonggi_state == "waiting":
-                    # Click to toss a stone
-                    for gonggi in current_gonggi:
-                        if gonggi["rect"].collidepoint(mx, my) and gonggi["y"] == 600:
-                            # Toss this stone up
-                            gonggi["y"] = 200  # Start high
-                            gonggi["vy"] = -16   # Upward velocity
-                            gonggi["airborne"] = True
-                            airborne_stone = gonggi
-                            tossed_stone_start_time = time()
-                            gonggi_state = "stone_in_air"         
-                elif gonggi_state == "stone_in_air":
-                    # Click to pick up stones from ground
-                    for gonggi in current_gonggi:
-                        if (gonggi["rect"].collidepoint(mx, my) and 
-                            gonggi["y"] == 600 and 
-                            gonggi != airborne_stone and
-                            gonggi not in picked_stones):
-                            # Pick up this stone
-                            picked_stones.append(gonggi)
-                            gonggi["y"] = 550  # Lift slightly to show it's picked
+                match gonggi_state: 
+                    case "waiting":
+                        # Click to toss a stone
+                        for gonggi in current_gonggi:
+                            if gonggi["rect"].collidepoint(mx, my) and gonggi["y"] == 600:
+                                # Toss this stone up
+                                gonggi["y"] = 200  # Start high
+                                gonggi["vy"] = -16   # Upward velocity
+                                gonggi["airborne"] = True
+                                airborne_stone = gonggi
+                                tossed_stone_start_time = time()
+                                gonggi_state = "stone_in_air"         
+                    case "stone_in_air":
+                        # Click to pick up stones from ground
+                        for gonggi in current_gonggi:
+                            if (gonggi["rect"].collidepoint(mx, my) and 
+                                gonggi["y"] == 600 and 
+                                gonggi != airborne_stone and
+                                gonggi not in picked_stones):
+                                # Pick up this stone
+                                picked_stones.append(gonggi)
+                                gonggi["y"] = 550  # Lift slightly to show it's picked
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and gonggi_level == 5 and gonggi_state == 'stone_in_air' and not gonggi_processed and gonggi_phase:
             player1.gonggi_caught = True

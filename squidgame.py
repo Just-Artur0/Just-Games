@@ -1,22 +1,19 @@
 import pygame
 from assets import background_squidgame_image, knife_image, squidgame_voiceline1, squidgame_voiceline2, squidgame_voiceline3, rain_theme, finalist_suit_image
-from player import player_image, all_player_images, player1, reset_player
-from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, window, game_surface
+from player import player_image, all_player_images, player1, reset_player, Player
+from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface
 from intro import play_intro_and_show_subtitles
-from os.path import join
+from main import font_path
 from sys import exit
 from random import choice, randint, random
 from time import sleep, time
-from player import Player
 def squidgame(freeplay=0):
-    global player_image, window, is_fullscreen
-    pygame.font.init()
+    global player_image
     reset_player()
     play_intro_and_show_subtitles(6)
     if freeplay == 1:
         sprite_id = randint(0, 22)
         player_image = all_player_images[sprite_id]
-    font_path = join("Fonts", "Game Of Squids.ttf")
     knife_image_right = pygame.transform.rotate(knife_image, -45)
     knife_image_left = pygame.transform.rotate(knife_image, 45)
     knife_swing_frames = 50
@@ -68,34 +65,34 @@ def squidgame(freeplay=0):
     while True:
         clock.tick(60)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif event.type == pygame.VIDEORESIZE:
-                handle_resize(event.w, event.h)
-                rain_drops = []
-                for _ in range(50):  # number of drops
-                    x = randint(0, game_surface.get_width())
-                    y = randint(0, game_surface.get_height())
-                    speed = randint(4, 10)
-                    rain_drops.append([x, y, speed])
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_F11:
-                    toggle_fullscreen()
-                    rain_drops = []
-                    for _ in range(50):  # number of drops
-                        x = randint(0, game_surface.get_width())
-                        y = randint(0, game_surface.get_height())
-                        speed = randint(4, 10)
-                        rain_drops.append([x, y, speed])
-                elif event.key == pygame.K_ESCAPE and is_fullscreen:
-                    toggle_fullscreen()
-                    rain_drops = []
-                    for _ in range(50):  # number of drops
-                        x = randint(0, game_surface.get_width())
-                        y = randint(0, game_surface.get_height())
-                        speed = randint(4, 10)
-                        rain_drops.append([x, y, speed])
+            match event.type:
+                case pygame.QUIT:
+                    exit()
+                case pygame.VIDEORESIZE:
+                        handle_resize(event.w, event.h)
+                        rain_drops = []
+                        for _ in range(50):  # number of drops
+                            x = randint(0, game_surface.get_width())
+                            y = randint(0, game_surface.get_height())
+                            speed = randint(4, 10)
+                            rain_drops.append([x, y, speed])
+                case pygame.KEYDOWN:
+                    if event.key == pygame.K_F11:
+                        toggle_fullscreen()
+                        rain_drops = []
+                        for _ in range(50):  # number of drops
+                            x = randint(0, game_surface.get_width())
+                            y = randint(0, game_surface.get_height())
+                            speed = randint(4, 10)
+                            rain_drops.append([x, y, speed])
+                    elif event.key == pygame.K_ESCAPE and is_fullscreen:
+                        toggle_fullscreen()
+                        rain_drops = []
+                        for _ in range(50):  # number of drops
+                            x = randint(0, game_surface.get_width())
+                            y = randint(0, game_surface.get_height())
+                            speed = randint(4, 10)
+                            rain_drops.append([x, y, speed])
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
             last_key_pressed = "right"
@@ -160,16 +157,17 @@ def squidgame(freeplay=0):
                 bot_move_direction = choice(["up", "down", "left", "right", "idle"])
                 bot_move_timer = randint(30, 60)
             # Move bot
-            if bot_move_direction == "up":
-                bot.y -= 3
-            elif bot_move_direction == "down":
-                bot.y += 3
-            elif bot_move_direction == "left":
-                bot.x -= 3
-                bot.knife_direction = "left"
-            elif bot_move_direction == "right":
-                bot.x += 3
-                bot.knife_direction = "right"
+            match bot_move_direction:
+                case "up":
+                    bot.y -= 3
+                case "down":
+                    bot.y += 3
+                case "left":
+                    bot.x -= 3
+                    bot.knife_direction = "left"
+                case "right":
+                    bot.x += 3
+                    bot.knife_direction = "right"
             # Keep inside bounds
             bot.x = max(0, min(1230, bot.x))
             bot.y = max(0, min(620, bot.y))

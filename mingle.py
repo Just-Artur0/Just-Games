@@ -4,11 +4,11 @@ from player import player1, reset_player, sprite_id, player_image
 from main import font_path
 from sys import exit
 from intro import play_intro_and_show_subtitles
-from resize import window, is_fullscreen, toggle_fullscreen, handle_resize, render_to_screen, game_surface
+from resize import is_fullscreen, toggle_fullscreen, handle_resize, render_to_screen, game_surface
 from random import randint
 from time import sleep, time
 def mingle(freeplay=0):
-    global window, is_fullscreen, player_image, sprite_id
+    global sprite_id, player_image
     reset_player()
     if freeplay == 1:
         sprite_id = randint(0, 22)
@@ -94,21 +94,24 @@ def mingle(freeplay=0):
                         dist = abs(self.x - rect.centerx) + abs(self.y - rect.centery)
                         score = dist
                         score += count * 50
-                        if players_needed == 6:
-                            if count == 2:
-                                score -= 1000
-                            elif count == 3:
-                                score -= 1400
-                            elif count == 4:
-                                score -= 1800
-                        elif players_needed == 5:
-                            if count == 2:
-                                score -= 1000
-                            elif count == 3:
-                                score -= 1500
-                        elif players_needed == 4:
-                            if count == 2:
-                                score -= 1000
+                        match players_needed:
+                            case 6:
+                                match count: 
+                                    case 2:
+                                        score -= 1000
+                                    case 3:
+                                        score -= 1400
+                                    case 4:
+                                        score -= 1800
+                            case 5:
+                                match count: 
+                                    case 2:
+                                        score -= 1000
+                                    case 3:
+                                        score -= 1500
+                            case 4:
+                                if count == 2:
+                                    score -= 1000
                         if count == players_needed - 1:
                             score -= 2000  # strong bonus → bots rush here
                         if count == 0:
@@ -277,16 +280,16 @@ def mingle(freeplay=0):
     while run:
         clock.tick(60)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif event.type == pygame.VIDEORESIZE:
-                handle_resize(event.w, event.h)
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_F11:
-                    toggle_fullscreen()
-                elif event.key == pygame.K_ESCAPE and is_fullscreen:
-                    toggle_fullscreen()
+            match event.type: 
+                case pygame.QUIT:
+                    exit()
+                case pygame.VIDEORESIZE:
+                    handle_resize(event.w, event.h)
+                case pygame.KEYDOWN:
+                    if event.key == pygame.K_F11:
+                        toggle_fullscreen()
+                    elif event.key == pygame.K_ESCAPE and is_fullscreen:
+                        toggle_fullscreen()
         alive_count = 1 if not player1.eliminated else 0
         alive_count += sum(1 for bot in bots if not bot.eliminated)
         mingle_elapsed = time() - mingle_start_time
@@ -499,10 +502,17 @@ def mingle(freeplay=0):
             sleep(3)
             return mainmenu()
         elif player1.mingle_win:
-            from menus import mainmenu
             win_text = font.render("You Won Mingle!", True, (0, 255, 0))
             game_surface.blit(win_text, (game_surface.get_width() // 2 - win_text.get_width() // 2, 600))
             pygame.display.flip()
             sleep(3)
-            return mainmenu()
+            match freeplay:
+                case 0:
+                    from lobby import lobby
+                    lobby("Get Ready for Hide-n-Seek!", 40, 1)
+                    from hide import hide
+                    return hide()
+                case 1:
+                    from menus import mainmenu
+                    return mainmenu()
         render_to_screen()

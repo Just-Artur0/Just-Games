@@ -1,19 +1,15 @@
 import pygame
-from assets import dalgona_image, background_dalgona_image, dalgona_theme, dalgona_scratch, dalgona_crack, needle_img, shape_images, crack_images, doll_sound
+from assets import dalgona_image, background_dalgona_image, dalgona_theme, dalgona_scratch, dalgona_crack, needle_img, shape_images, crack_images
+from main import font_path
 from player import reset_player
 from intro import play_intro_and_show_subtitles
-from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, window, game_surface
+from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface
 from random import choice
 from time import time, sleep
 from sys import exit
-from os.path import join
 def dalgona(freeplay=0):
-    global window, is_fullscreen
-    pygame.font.init()
     reset_player()
-    doll_sound.stop()
     play_intro_and_show_subtitles(2)
-    font_path = join("Fonts", "Game Of Squids.ttf")
     scratch_channel = pygame.mixer.Channel(5)
     crack_channel = pygame.mixer.Channel(4)
     dalgona_theme.play(-1)
@@ -74,24 +70,24 @@ def dalgona(freeplay=0):
                 game_surface.blit(s, rect_on_screen.topleft)
                 pygame.draw.rect(game_surface, (255, 0, 0), rect_on_screen, 2)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif event.type == pygame.VIDEORESIZE:
-                handle_resize(event.w, event.h)
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_F11:
-                    toggle_fullscreen()
-                elif event.key == pygame.K_ESCAPE and is_fullscreen:
-                    toggle_fullscreen()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_held = True
-                target_fps = 30
-            elif event.type == pygame.MOUSEBUTTONUP:
-                scratch_channel.stop()
-                pygame.mouse.set_visible(True)
-                mouse_held = False
-                target_fps = 15
+            match event.type:
+                case pygame.QUIT:
+                    exit()
+                case pygame.VIDEORESIZE:
+                    handle_resize(event.w, event.h)
+                case pygame.KEYDOWN:
+                    if event.key == pygame.K_F11:
+                        toggle_fullscreen()
+                    elif event.key == pygame.K_ESCAPE and is_fullscreen:
+                        toggle_fullscreen()
+                case pygame.MOUSEBUTTONDOWN:
+                    mouse_held = True
+                    target_fps = 30
+                case pygame.MOUSEBUTTONUP:
+                    scratch_channel.stop()
+                    pygame.mouse.set_visible(True)
+                    mouse_held = False
+                    target_fps = 15
         if mouse_held and not lost and not success:
             if not scratch_channel.get_busy():
                 scratch_channel.play(dalgona_scratch, loops=-1)

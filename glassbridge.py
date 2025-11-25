@@ -2,22 +2,20 @@ import pygame
 from assets import background_glassbridge_image, glass_image, marbles_theme, glassbridge_theme, glass_shatter, glassbridge_collapse
 from player import player_image, all_player_images, reset_player, player1
 from intro import play_intro_and_show_subtitles
-from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, window, game_surface, scale_mouse_pos
-from os.path import join
+from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface, scale_mouse_pos
+from main import font_path
 from sys import exit
 from random import choice, randint, shuffle
 from time import time
 from button import draw_button
 def glass_bridge(freeplay=0):
-    global player_image, window, is_fullscreen
-    pygame.font.init()
+    global player_image
     reset_player()
     marbles_theme.stop()
     play_intro_and_show_subtitles(5)
     if freeplay == 1:
         sprite_id = randint(0, 22)
         player_image = all_player_images[sprite_id]
-    font_path = join("Fonts", "Game Of Squids.ttf")
     glassbridge_theme.play(-1)
     font = pygame.font.Font(font_path, 40)
     top_button = pygame.Rect(800, 500, 170, 60)
@@ -284,17 +282,17 @@ def glass_bridge(freeplay=0):
                 game_surface.blit(all_player_images[bot.sprite_id], (bot_x, bot_y))
         render_to_screen()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif event.type == pygame.VIDEORESIZE:
-                handle_resize(event.w, event.h)
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_F11:
-                    toggle_fullscreen()
-                elif event.key == pygame.K_ESCAPE and is_fullscreen:
-                    toggle_fullscreen()
-            elif event.type == pygame.MOUSEBUTTONDOWN and not player1.eliminated and not player1.glass_win:
+            match event.type:
+                case pygame.QUIT:
+                    exit()
+                case pygame.VIDEORESIZE:
+                    handle_resize(event.w, event.h)
+                case pygame.KEYDOWN:
+                    if event.key == pygame.K_F11:
+                        toggle_fullscreen()
+                    elif event.key == pygame.K_ESCAPE and is_fullscreen:
+                        toggle_fullscreen()
+            if event.type == pygame.MOUSEBUTTONDOWN and not player1.eliminated and not player1.glass_win:
                 mx, my = scale_mouse_pos(*event.pos)
                 if top_button.collidepoint(mx, my):
                     player1.glass_choice = 0
@@ -306,11 +304,12 @@ def glass_bridge(freeplay=0):
             from menus import mainmenu
             glassbridge_theme.stop()
             if not player1.eliminated:
-                if freeplay == 0:
-                    from lobby import lobby
-                    lobby("Squid Game is Next!", duration=20, lights=0)
-                    from squidgame import squidgame
-                    return squidgame(0)
-                elif freeplay == 1:
-                    return mainmenu()
+                match freeplay:
+                    case 0:
+                        from lobby import lobby
+                        lobby("Squid Game is Next!", duration=20, lights=0)
+                        from squidgame import squidgame
+                        return squidgame(0)
+                    case 1:
+                        return mainmenu()
             return mainmenu()

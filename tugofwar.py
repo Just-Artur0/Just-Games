@@ -2,21 +2,19 @@ import pygame
 from assets import tugofwar_theme, background_tugofwar_image, all_player_images
 from player import player1, reset_player, player_image
 from intro import play_intro_and_show_subtitles
-from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, window, scale_mouse_pos, game_surface
+from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, scale_mouse_pos, game_surface
 from random import choice, randint
-from os.path import join
+from main import font_path
 from sys import exit
 from time import sleep
 def tugofwar(freeplay=0):
-    global player_image, window, is_fullscreen
-    pygame.font.init()
+    global player_image
     reset_player()
     play_intro_and_show_subtitles(3)
     if freeplay == 1:
         sprite_id = randint(0, 22)
         player_image = all_player_images[sprite_id]
     tugofwar_theme.play(-1)
-    font_path = join("Fonts", "Game Of Squids.ttf")
     clock = pygame.time.Clock()
     player1.team = choice(['left', 'right'])
     bot_team = 'right' if player1.team == 'left' else 'left'
@@ -45,20 +43,21 @@ def tugofwar(freeplay=0):
         text = font4.render("TUG!", True, (0, 0, 0))
         game_surface.blit(text, (button_rect.x + 15, button_rect.y + 15))
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif event.type == pygame.VIDEORESIZE:
-                handle_resize(event.w, event.h)
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_F11:
-                    toggle_fullscreen()
-                elif event.key == pygame.K_ESCAPE and is_fullscreen:
-                    toggle_fullscreen()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if button_rect.collidepoint(pygame.mouse.get_pos()):
-                    click_count += 1
-                    tug_clicks[player1.team] += 1
+            match event.type:
+                case pygame.QUIT:
+                    exit()
+                case pygame.VIDEORESIZE:
+                    handle_resize(event.w, event.h)
+                case pygame.KEYDOWN:
+                    if event.key == pygame.K_F11:
+                        toggle_fullscreen()
+                    elif event.key == pygame.K_ESCAPE and is_fullscreen:
+                        toggle_fullscreen()
+                case pygame.MOUSEBUTTONDOWN:
+                    mx, my = scale_mouse_pos(*event.pos)
+                    if button_rect.collidepoint(mx, my):
+                        click_count += 1
+                        tug_clicks[player1.team] += 1
         current_time = pygame.time.get_ticks()
         if current_time - last_bot_click >= bot_click_interval:
             tug_clicks[bot_team] += 1
@@ -84,14 +83,15 @@ def tugofwar(freeplay=0):
             game_surface.blit(win_text, (game_surface.get_width() // 2 - win_text.get_width() // 2, 600))
             render_to_screen()
             sleep(3)
-            if freeplay == 0:
-                from lobby import lobby
-                lobby("Marbles is Next!", duration=20, lights=0)
-                from marbles import marbles
-                return marbles(0)
-            elif freeplay == 1:
-                from menus import mainmenu
-                return mainmenu()
+            match freeplay:
+                case 0:
+                    from lobby import lobby
+                    lobby("Marbles is Next!", duration=20, lights=0)
+                    from marbles import marbles
+                    return marbles(0)
+                case 1:
+                    from menus import mainmenu
+                    return mainmenu()
         elif player1.eliminated:
             tugofwar_theme.stop()
             lose_text = font.render("Your Team Lost", True, (255, 0, 0))
@@ -100,5 +100,4 @@ def tugofwar(freeplay=0):
             sleep(3)
             from menus import mainmenu
             return mainmenu()
-
         render_to_screen()
