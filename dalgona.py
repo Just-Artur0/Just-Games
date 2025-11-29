@@ -44,6 +44,7 @@ def dalgona(freeplay=0):
     carved = [False] * len(carving_zones)
     font_success = pygame.font.Font(font_path, 55)
     font_lose = pygame.font.Font(font_path, 50)
+    font = pygame.font.Font(font_path, 60)
     success = False
     lost = False
     mouse_held = False
@@ -117,7 +118,7 @@ def dalgona(freeplay=0):
             dalgona_scratch.stop()
             text = font_lose.render("You lost! Carved outside the shape!", True, (255, 0, 0))
             game_surface.blit(text, (game_surface.get_width() // 2 - text.get_width() // 2, 80))
-            pygame.display.flip()
+            render_to_screen()
             sleep(3)
             return mainmenu()
         elif all(carved) and not lost:
@@ -128,13 +129,21 @@ def dalgona(freeplay=0):
             minutes = dalgona_time_left // 60
             seconds = dalgona_time_left % 60
             timer_text = f"{int(minutes):02}:{int(seconds):02}"
-            font = pygame.font.Font(font_path, 60)
             timer_surface = font.render(timer_text, True, (255, 0, 0))
             game_surface.blit(timer_surface, (game_surface.get_width() // 2 - timer_surface.get_width() // 2, 20))
             text = font_success.render("Success! Shape Completed!", True, (0, 255, 0))
             game_surface.blit(text, (game_surface.get_width() // 2 - text.get_width() // 2, 80))
-            pygame.display.flip()
-        if success and dalgona_time_left <= 0:
+            for i, rect in enumerate(carving_zones):
+                rect_on_screen = rect.move(shape_pos)
+                if carved[i]:
+                    pygame.draw.rect(game_surface, (0, 255, 0, 150), rect_on_screen)
+                else:
+                    s = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+                    s.fill((255, 0, 0, 100))
+                    game_surface.blit(s, rect_on_screen.topleft)
+                    pygame.draw.rect(game_surface, (255, 0, 0), rect_on_screen, 2)
+            render_to_screen()
+            sleep(3)
             dalgona_theme.stop()
             from menus import mainmenu
             if freeplay == 0:
@@ -147,13 +156,22 @@ def dalgona(freeplay=0):
         elif not success and dalgona_time_left <= 0:
             pygame.mouse.set_visible(True)
             dalgona_theme.stop()
+            dalgona_scratch.stop()
+            minutes = dalgona_time_left // 60
+            seconds = dalgona_time_left % 60
+            timer_text = f"{int(minutes):02}:{int(seconds):02}"
+            timer_surface = font.render(timer_text, True, (255, 0, 0))
+            game_surface.blit(timer_surface, (game_surface.get_width() // 2 - timer_surface.get_width() // 2, 20))
+            text = font_success.render("You Lost...", True, (255, 0, 0))
+            game_surface.blit(text, (game_surface.get_width() // 2 - text.get_width() // 2, 80))
+            render_to_screen()
+            sleep(3)
             from menus import mainmenu
             return mainmenu()
         # Draw countdown timer
         minutes = dalgona_time_left // 60
         seconds = dalgona_time_left % 60
         timer_text = f"{int(minutes):02}:{int(seconds):02}"
-        font = pygame.font.Font(font_path, 60)
         timer_surface = font.render(timer_text, True, (255, 0, 0))
         game_surface.blit(timer_surface, (game_surface.get_width() // 2 - timer_surface.get_width() // 2, 20))
         render_to_screen()

@@ -7,13 +7,18 @@ from math import sin, pi
 from sys import exit
 from assets import all_player_images, dormitory_image, knife_image, money, dorm
 from resize import is_fullscreen, toggle_fullscreen, handle_resize, render_to_screen, game_surface
+import player_selected
 def lobby(message="Waiting for next game...", duration=20, lights=0):
     global player_image
+    if player_selected.selected_index is not None:
+        player_image = all_player_images[player_selected.selected_index]
     money.play()
     player1.x = 0
     player1.y = 620
     font2 = pygame.font.Font(font_path, 36)
     small_font = pygame.font.Font(font_path, 24)
+    prompt_font = pygame.font.Font(font_path, 40)
+    health_font = pygame.font.Font(font_path, 20)
     start_time = time()
     brightness_timer = 0
     brightness_cycle_duration = 120  # frames for full cycle (2 seconds at 60fps)
@@ -169,20 +174,16 @@ def lobby(message="Waiting for next game...", duration=20, lights=0):
                     bot_swing_counter -= 1
                 else:
                     bot.knife_active = False
-            # Draw bot
-            game_surface.blit(bot2_image, (bot.x, bot.y))
-            health_font = pygame.font.Font(font_path, 20)
-            health_text = health_font.render(f"{int(bot.health)} HP", True, (255, 0, 0))
-            if bot.health >= 0:
+            if bot.health > 0:
+                game_surface.blit(bot2_image, (bot.x, bot.y))
+                health_text = health_font.render(f"{int(bot.health)} HP", True, (255, 0, 0))
                 game_surface.blit(health_text, (bot.x, bot.y - 20))
             game_surface.blit(player_image, (player1.x, player1.y))  # Draw the player on the window
-            health_font = pygame.font.Font(font_path, 20)
             health_text = health_font.render(f"{int(player1.health)} HP", True, (255, 0, 0))
             game_surface.blit(health_text, (player1.x, player1.y - 20))
             if not has_attacked:
-                prompt_font = pygame.font.Font(font_path, 40)
                 prompt_text = prompt_font.render("Press SPACE to Attack", True, (255, 255, 255))
-                game_surface.blit(prompt_text, (game_surface.get_width() // 2 - prompt_text.get_width() // 2, 10))
+                game_surface.blit(prompt_text, (game_surface.get_width() // 2 - prompt_text.get_width() // 2, 60))
             game_surface.blit(brightness_surface, (0, 0))
         msg = font2.render(message, True, (255, 255, 255))
         game_surface.blit(msg, (game_surface.get_width() // 2 - msg.get_width() // 2, 150))
@@ -193,7 +194,6 @@ def lobby(message="Waiting for next game...", duration=20, lights=0):
         game_surface.blit(timer_surface, (game_surface.get_width() // 2 - timer_surface.get_width() // 2, 20))
         game_surface.blit(player_image, (player1.x, player1.y))
         render_to_screen()
-        # If timer ends, break
         if time_left1 <= 0:
             money.stop()
             break

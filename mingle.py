@@ -7,12 +7,16 @@ from intro import play_intro_and_show_subtitles
 from resize import is_fullscreen, toggle_fullscreen, handle_resize, render_to_screen, game_surface
 from random import randint
 from time import sleep, time
+import player_selected
 def mingle(freeplay=0):
     global sprite_id, player_image
     reset_player()
-    if freeplay == 1:
-        sprite_id = randint(0, 22)
-        player_image = all_player_images[sprite_id]
+    if player_selected.selected_index is None:
+        if freeplay == 1:
+            sprite_id = randint(0, 22)
+            player_image = all_player_images[sprite_id]
+    else:
+        player_image = all_player_images[player_selected.selected_index]
     play_intro_and_show_subtitles(13)
     player1.eliminated = False
     player1.in_door = False

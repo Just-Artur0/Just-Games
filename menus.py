@@ -1,6 +1,7 @@
 import pygame
 from assets import redlight_button_image, dalgona_button_image, tugofwar_button_image, marbles_button_image, justgame_image, freeplay_image, storymode_image, pentathlon_button_image, season3_button_image
-from assets import glass_bridge_button_image, squidgame_button_image, mingle_button_image, back_image, maintheme, season1_button_image, season2_button_image, hide_button_image
+from assets import glass_bridge_button_image, squidgame_button_image, mingle_button_image, back_image, maintheme, season1_button_image, season2_button_image, hide_button_image, jumprope_button_image
+from assets import playerselect_image
 from resize import handle_resize, toggle_fullscreen, scale_mouse_pos, render_to_screen, game_surface, is_fullscreen
 from button import Button
 from sys import exit
@@ -13,11 +14,13 @@ from squidgame import squidgame
 from pentathlon import six_legged_pentathlon
 from mingle import mingle
 from hide import hide
+from jumprope import jumprope
 def mainmenu():
     maintheme.play(-1)
     justgame = Button(500, 250, justgame_image)
     freeplay_button = Button(100,100,freeplay_image)
     storymode_button = Button(100,100,storymode_image)
+    playerselect_button = Button(100,100,playerselect_image)
     clock = pygame.time.Clock()
     while True:
         clock.tick(10)
@@ -36,14 +39,19 @@ def mainmenu():
                     mx, my = scale_mouse_pos(*event.pos)
                     STORYMODE_RECT = pygame.Rect(600, 420, storymode_button.width, storymode_button.height)
                     FREEPLAY_RECT = pygame.Rect(600, 520, freeplay_button.width, freeplay_button.height)
+                    PLAYERSELECT_RECT = pygame.Rect(600, 620, playerselect_button.width, playerselect_button.height)
                     if STORYMODE_RECT.collidepoint(mx, my):
                         return storymode_menu(0)
                     elif FREEPLAY_RECT.collidepoint(mx, my):
                         return storymode_menu(1)
+                    elif PLAYERSELECT_RECT.collidepoint(mx, my):
+                        from player_select import select
+                        return select()
         game_surface.fill((0,0,0))
         game_surface.blit(justgame.image, (400, 100))
         game_surface.blit(storymode_button.image, (600, 420))
         game_surface.blit(freeplay_button.image, (600, 520))
+        game_surface.blit(playerselect_button.image, (600, 620))
         render_to_screen()
 def freeplay_menu(menu=0):
     match menu:
@@ -69,9 +77,10 @@ def freeplay_menu(menu=0):
         case 2:
             buttons = [
                 Button(200, 100, hide_button_image),
+                Button(200, 100, jumprope_button_image),
                 Button(200, 100, back_image)
             ]
-            positions = [(200, 150), (0, 0)]
+            positions = [(200, 150), (450, 150), (0, 0)]
     clock = pygame.time.Clock()
     while True:
         clock.tick(10)
@@ -109,13 +118,15 @@ def freeplay_menu(menu=0):
                                         case 1:
                                             return six_legged_pentathlon(1)
                                         case 2:
-                                            return mainmenu()
+                                            return jumprope(1)
                                 case 2:
                                     match menu:
                                         case 0:
                                             return tugofwar(1)
                                         case 1:
                                             return mingle(1)
+                                        case 2:
+                                            return mainmenu()
                                 case 3:
                                     match menu:
                                         case 0:

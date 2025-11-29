@@ -3,16 +3,20 @@ from main import font_path
 from assets import key_image, hide_knife_image, door_image, hide_background_image, stairs_image, red_image, blue_image, hide_theme, unlock
 from intro import play_intro_and_show_subtitles
 from player import player_image, all_player_images, player1, reset_player, Player
-from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface, game_surface
+from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface
 from sys import exit
 from random import choice, randint, random
 from time import sleep, time
+import player_selected
 def hide(freeplay=0):
     global player_image
     reset_player()
-    if freeplay == 1:
-        sprite_id = randint(0, 22)
-        player_image = all_player_images[sprite_id]
+    if player_selected.selected_index is None:
+        if freeplay == 1:
+            sprite_id = randint(0, 22)
+            player_image = all_player_images[sprite_id]
+    else:
+        player_image = all_player_images[player_selected.selected_index]
     play_intro_and_show_subtitles(14)
     hide_theme_channel = pygame.mixer.Channel(6)
     run = True
@@ -503,11 +507,18 @@ def hide(freeplay=0):
             sleep(3)
             return mainmenu()
         elif bot.eliminated:
-            from menus import mainmenu
             hide_theme_channel.stop()
             win_text = font1.render("You WON!", True, (0, 255, 0))
             game_surface.blit(win_text, (game_surface.get_width() // 2 - win_text.get_width() // 2, 600))
             render_to_screen()
             sleep(3)
-            return mainmenu()
+            match freeplay:
+                case 1:
+                    from menus import mainmenu
+                    return mainmenu()
+                case 0:
+                    from lobby import lobby
+                    lobby("Get Ready for Jump Rope!", 20, 0)
+                    from jumprope import jumprope
+                    return jumprope(0)
         render_to_screen()

@@ -8,7 +8,7 @@ from assets import ddakji_background1_image, ddakji_background2_image, ddakji_ba
 from assets import ddakji_background7_image, ddakji_background8_image, ddakji_background9_image, ddakji_background10_image, ddakji_background11_image, ddakji_background12_image, ddakji_background13_image
 from assets import doll_image, doll_forward_image, intro_voice, dalgona_intro_voice, tugofwar_intro_voice, marbles_intro_voice, glassbridge_intro_voice, squidgame_intro_voice, squidgame_end
 from assets import pentathlon_intro_voice, story_ddakji_intro_voice, story_ddakji_firstfail, story_ddakji_secondfail, story_ddakji_win, mingle_intro_voice, hide_intro_voice, hide_background1_image
-from assets import hide_background2_image
+from assets import hide_background2_image, jump_intro_voice, jump_background2_image
 from resize import game_surface, is_fullscreen, handle_resize, toggle_fullscreen, render_to_screen
 def play_intro_and_show_subtitles(sub_num=1):
     match sub_num: 
@@ -579,6 +579,24 @@ def play_intro_and_show_subtitles(sub_num=1):
                 "The game will begin momentarily.", 
                 4000, hide_background2_image),
             ]
+        case 15: #jump rope intro
+            subtitles = [
+                ("다섯 번째 게임에 오신 것을 환영합니다.", 
+                "Welcome to the fifth game.", 
+                5000, jump_background2_image),
+                ("당신이 플레이할 게임은 점프 로프입니다.", 
+                "The game you will be playing is Jump Rope.", 
+                5000, jump_background2_image),
+                ("회전하는 로프를 뛰어넘어 다리를 건너야 합니다.", 
+                "You must cross the bridge as you jump over the rotating rope", 
+                5000, jump_background2_image),
+                ("20분 안에 반대편에 도착할 수 있어요.", 
+                "and get to the other side within 20 minutes.", 
+                5000, jump_background2_image),
+                ("이제 게임을 시작해 보겠습니다.", 
+                "Now, let the game begin.", 
+                4000, jump_background2_image),
+            ]
     intro_voice_channel = pygame.mixer.Channel(7)
     match sub_num:
         case 1:
@@ -609,6 +627,8 @@ def play_intro_and_show_subtitles(sub_num=1):
             intro_voice_channel.play(mingle_intro_voice)
         case 14:
             intro_voice_channel.play(hide_intro_voice)
+        case 15:
+            intro_voice_channel.play(jump_intro_voice)
     font_korean = pygame.font.SysFont("malgungothic", 34)
     font_english = pygame.font.SysFont("Arial", 30)
     clock = pygame.time.Clock()

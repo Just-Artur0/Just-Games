@@ -12,13 +12,17 @@ from main import font_path
 from sys import exit
 from intro import play_intro_and_show_subtitles 
 from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface, scale_mouse_pos
+import player_selected
 def six_legged_pentathlon(freeplay=0):
     global sprite_id, player_image
     reset_player()
     play_intro_and_show_subtitles(8)
-    if freeplay == 1:
-        sprite_id = randint(0, 22)
-        player_image = all_player_images[sprite_id]
+    if player_selected.selected_index is None:
+        if freeplay == 1:
+            sprite_id = randint(0, 22)
+            player_image = all_player_images[sprite_id]
+    else:
+        player_image = all_player_images[player_selected.selected_index]
     run = True
     clock = pygame.time.Clock()
     WHITE = (255, 255, 255)

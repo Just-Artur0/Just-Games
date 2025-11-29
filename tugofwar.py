@@ -7,13 +7,17 @@ from random import choice, randint
 from main import font_path
 from sys import exit
 from time import sleep
+import player_selected
 def tugofwar(freeplay=0):
     global player_image
     reset_player()
     play_intro_and_show_subtitles(3)
-    if freeplay == 1:
-        sprite_id = randint(0, 22)
-        player_image = all_player_images[sprite_id]
+    if player_selected.selected_index is None:
+        if freeplay == 1:
+            sprite_id = randint(0, 22)
+            player_image = all_player_images[sprite_id]
+    else:
+        player_image = all_player_images[player_selected.selected_index]
     tugofwar_theme.play(-1)
     clock = pygame.time.Clock()
     player1.team = choice(['left', 'right'])

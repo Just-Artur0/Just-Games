@@ -8,14 +8,18 @@ from sys import exit
 from random import choice, randint, shuffle
 from time import time
 from button import draw_button
+import player_selected
 def glass_bridge(freeplay=0):
     global player_image
     reset_player()
     marbles_theme.stop()
     play_intro_and_show_subtitles(5)
-    if freeplay == 1:
-        sprite_id = randint(0, 22)
-        player_image = all_player_images[sprite_id]
+    if player_selected.selected_index is None:
+        if freeplay == 1:
+            sprite_id = randint(0, 22)
+            player_image = all_player_images[sprite_id]
+    else:
+        player_image = all_player_images[player_selected.selected_index]
     glassbridge_theme.play(-1)
     font = pygame.font.Font(font_path, 40)
     top_button = pygame.Rect(800, 500, 170, 60)

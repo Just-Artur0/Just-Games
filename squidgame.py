@@ -7,13 +7,17 @@ from main import font_path
 from sys import exit
 from random import choice, randint, random
 from time import sleep, time
+import player_selected
 def squidgame(freeplay=0):
     global player_image
     reset_player()
     play_intro_and_show_subtitles(6)
-    if freeplay == 1:
-        sprite_id = randint(0, 22)
-        player_image = all_player_images[sprite_id]
+    if player_selected.selected_index is None:
+        if freeplay == 1:
+            sprite_id = randint(0, 22)
+            player_image = all_player_images[sprite_id]
+    else:
+        player_image = all_player_images[player_selected.selected_index]
     knife_image_right = pygame.transform.rotate(knife_image, -45)
     knife_image_left = pygame.transform.rotate(knife_image, 45)
     knife_swing_frames = 50
@@ -259,7 +263,7 @@ def squidgame(freeplay=0):
             from menus import mainmenu
             lose_text = font.render("You Lost...", True, (255, 0, 0))
             game_surface.blit(lose_text, (game_surface.get_width() // 2 - lose_text.get_width() // 2, 600))
-            pygame.display.flip()
+            render_to_screen()
             sleep(3)
             rain_theme.stop()
             return mainmenu()
@@ -267,7 +271,7 @@ def squidgame(freeplay=0):
             from menus import mainmenu
             win_text = font.render("You WON!", True, (0, 255, 0))
             game_surface.blit(win_text, (game_surface.get_width() // 2 - win_text.get_width() // 2, 600))
-            pygame.display.flip()
+            render_to_screen()
             sleep(3)
             rain_theme.stop()
             play_intro_and_show_subtitles(7)
