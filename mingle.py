@@ -1,5 +1,5 @@
 import pygame
-from assets import background_mingle_image, background_mingle1_image, all_player_images, mingle_theme, mingle_welcomeback,  mingle_chaos
+from assets import background_mingle_image, background_mingle1_image, all_player_images, mingle_theme, mingle_welcomeback, mingle_chaos, o_patch_image
 from player import player1, reset_player, sprite_id, player_image
 from main import font_path
 from sys import exit
@@ -22,7 +22,6 @@ def mingle(freeplay=0):
     player1.in_door = False
     player1.mingle_win = False
     player1.in_door_id = None
-    run = True
     clock = pygame.time.Clock()
     font = pygame.font.Font(font_path, 36)
     font1 = pygame.font.Font(font_path, 80)
@@ -281,7 +280,7 @@ def mingle(freeplay=0):
     ]
     font_korean = pygame.font.SysFont("malgungothic", 34)
     font_english = pygame.font.SysFont("Arial", 30)
-    while run:
+    while True:
         clock.tick(60)
         for event in pygame.event.get():
             match event.type: 
@@ -483,8 +482,12 @@ def mingle(freeplay=0):
         for bot in bots:
             if not bot.eliminated:
                 bot_image = all_player_images[bot.sprite_id]
-                game_surface.blit(bot_image, (bot.x, bot.y))  # Offset to center
+                game_surface.blit(bot_image, (bot.x, bot.y))
+                if freeplay == 0:
+                    game_surface.blit(o_patch_image, (bot.x, bot.y + 56))
         game_surface.blit(player_image, (player1.x, player1.y))
+        if freeplay == 0:
+            game_surface.blit(o_patch_image, (player1.x, player1.y + 56))
         current_english = ""
         current_korean = ""
         for start_t, duration, (eng, kor) in subtitle_events:
@@ -504,6 +507,7 @@ def mingle(freeplay=0):
             game_surface.blit(lose_text, (game_surface.get_width() // 2 - lose_text.get_width() // 2, 600))
             pygame.display.flip()
             sleep(3)
+            player1.voted = False
             return mainmenu()
         elif player1.mingle_win:
             win_text = font.render("You Won Mingle!", True, (0, 255, 0))

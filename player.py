@@ -33,6 +33,8 @@ class Player:
         self.in_door = False
         self.mingle_win = False
         self.in_door_id = None
+        self.voted = False
+        self.baby_picked = False
 sprite_id = randint(0, 22)
 player_image = all_player_images[sprite_id]
 player1 = Player(0, 620)

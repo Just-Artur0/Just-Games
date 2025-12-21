@@ -5,8 +5,8 @@ from main import font_path
 from sys import exit
 from random import randint
 from resize import game_surface, render_to_screen, is_fullscreen, toggle_fullscreen, handle_resize
-from assets import jump_background_image, doll1_image, doll2_image, doll1house_image, doll2house_image, jump_theme, tugofwar_theme
-from player import Player, reset_player, player_image, all_player_images
+from assets import jump_background_image, doll1_image, doll2_image, doll1house_image, doll2house_image, jump_theme, tugofwar_theme, o_patch_image, baby_image
+from player import player1, reset_player, player_image, all_player_images
 from intro import play_intro_and_show_subtitles
 import player_selected
 def jumprope(freeplay=0):
@@ -35,8 +35,8 @@ def jumprope(freeplay=0):
     jump_power = 12
     on_ground = False
     fall = False
-    player1 = Player(100, 300)
-    run = True
+    player1.x = 100
+    player1.y = 300
     clock = pygame.time.Clock()
     TILE_SIZE = 50
     level = ["#                                                           #",
@@ -71,6 +71,11 @@ def jumprope(freeplay=0):
     font_english = pygame.font.SysFont("Arial", 30)
     tug_played = False
     elapsed = 0
+    baby_rect = pygame.Rect(120, 360, 50, 39)
+    baby_pickable = False
+    baby_picked = False
+    baby_text = font.render("Press E to Pick Up Baby", True, (255, 255, 0))
+    scaled_baby = pygame.transform.scale(baby_image, (125, 120))
     platforms = []
     for row_i, row in enumerate(level):
             for col_i, tile in enumerate(row):
@@ -79,7 +84,7 @@ def jumprope(freeplay=0):
                 rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
                 if tile == "#":
                     platforms.append(rect)
-    while run:
+    while True:
         clock.tick(60)
         for event in pygame.event.get():
             match event.type:
@@ -105,6 +110,8 @@ def jumprope(freeplay=0):
             dx = 5
         else:
             dx = 0
+        if baby_pickable and keys[pygame.K_e]:
+            baby_picked = True
         player1.x += dx
         player1_rect = pygame.Rect(player1.x, player1.y, 50, 100)
         for platform in platforms:
@@ -135,6 +142,10 @@ def jumprope(freeplay=0):
                     player1_rect.top = platform.bottom
                     player1.y = player1_rect.y
                     vel_y = 0
+        if player1_rect.colliderect(baby_rect):
+            baby_pickable = True
+        else:
+            baby_pickable = False
         game_surface.fill((25, 1, 167))
         game_surface.blit(jump_background_image, (-10 - camera_x, -300 - camera_y))
         rope_angle += rope_speed
@@ -177,10 +188,22 @@ def jumprope(freeplay=0):
         game_surface.blit(doll2house_image, (2800 - camera_x, 0 - camera_y))
         if wave_height > 135:
             game_surface.blit(player_image, (player1.x - camera_x, player1.y - camera_y))
+            if freeplay == 0:
+                game_surface.blit(o_patch_image, (player1.x - camera_x, player1.y - camera_y + 56))
+            if not baby_picked:
+                game_surface.blit(scaled_baby, (120 - camera_x, 360 - camera_y))
+            elif baby_picked:
+                game_surface.blit(baby_image, (player1.x - camera_x, player1.y - camera_y + 61))
             pygame.draw.lines(game_surface, (150, 75, 0), False, points, 8)
         else:
             pygame.draw.lines(game_surface, (150, 75, 0), False, points, 8)
             game_surface.blit(player_image, (player1.x - camera_x, player1.y - camera_y))
+            if freeplay == 0:
+                game_surface.blit(o_patch_image, (player1.x - camera_x, player1.y - camera_y + 56))
+            if not baby_picked:
+                game_surface.blit(scaled_baby, (120 - camera_x, 360 - camera_y))
+            elif baby_picked:
+                game_surface.blit(baby_image, (player1.x - camera_x, player1.y - camera_y + 61))
         if player1.y > 1060:
             fall = False
             player1.x = 100
@@ -189,13 +212,20 @@ def jumprope(freeplay=0):
         game_surface.blit(doll2_image, (2450 - camera_x, -20 - camera_y))
         if time() - start_time >= duration:
             if player1.x >= 2400:
-                from menus import mainmenu
                 win_text = font.render("You WON!", True, (0, 255, 0))
                 game_surface.blit(win_text, (game_surface.get_width() // 2 - win_text.get_width() // 2, 600))
                 render_to_screen()
                 sleep(3)
                 tugofwar_theme.stop()
-                return mainmenu()
+                if freeplay == 0:
+                    player1.baby_picked = True
+                    from lobby import lobby
+                    lobby("Get Ready for Sky Squid Game!", 20, 0)
+                    from sky import sky
+                    return sky(0)
+                elif freeplay == 1:
+                    from menus import mainmenu
+                    return mainmenu()
             elif player1.x < 2500:
                 player1.eliminated = True
         if player1.eliminated:
@@ -204,8 +234,11 @@ def jumprope(freeplay=0):
             game_surface.blit(lose_text, (game_surface.get_width() // 2 - lose_text.get_width() // 2, 600))
             render_to_screen()
             sleep(3)
+            player1.voted = False
             tugofwar_theme.stop()
             return mainmenu()
+        if baby_pickable and not baby_picked:
+            game_surface.blit(baby_text, (game_surface.get_width() // 2 - baby_text.get_width() // 2, 550))
         minut = time_left // 60
         sec = time_left % 60
         time_text = f"{int(minut):02}:{int(sec):02}"

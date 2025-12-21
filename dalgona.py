@@ -1,9 +1,9 @@
 import pygame
 from assets import dalgona_image, background_dalgona_image, dalgona_theme, dalgona_scratch, dalgona_crack, needle_img, shape_images, crack_images
 from main import font_path
-from player import reset_player
+from player import reset_player, player1
 from intro import play_intro_and_show_subtitles
-from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface
+from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface, scale_mouse_pos
 from random import choice
 from time import time, sleep
 from sys import exit
@@ -92,8 +92,8 @@ def dalgona(freeplay=0):
         if mouse_held and not lost and not success:
             if not scratch_channel.get_busy():
                 scratch_channel.play(dalgona_scratch, loops=-1)
-            mouse_pos = pygame.mouse.get_pos()
-            mouse_x, mouse_y = pygame.mouse.get_pos()
+            mouse_pos = scale_mouse_pos(*event.pos)
+            mouse_x, mouse_y = scale_mouse_pos(*event.pos)
             pygame.mouse.set_visible(False)
             game_surface.blit(needle_img, (mouse_x - 6, mouse_y - 393))
             carved_outside = True
@@ -166,6 +166,7 @@ def dalgona(freeplay=0):
             game_surface.blit(text, (game_surface.get_width() // 2 - text.get_width() // 2, 80))
             render_to_screen()
             sleep(3)
+            player1.voted = False
             from menus import mainmenu
             return mainmenu()
         # Draw countdown timer

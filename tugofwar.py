@@ -1,5 +1,5 @@
 import pygame
-from assets import tugofwar_theme, background_tugofwar_image, all_player_images
+from assets import tugofwar_theme, background_tugofwar_image, all_player_images, o_patch_image
 from player import player1, reset_player, player_image
 from intro import play_intro_and_show_subtitles
 from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, scale_mouse_pos, game_surface
@@ -34,10 +34,11 @@ def tugofwar(freeplay=0):
     button_rect = pygame.Rect(540, 300, 200, 100)
     click_count = 0
     win_threshold = 300
+    bot_x = 200 if bot_team == 'left' else 1000
+    pos_xp = 200 if player1.team == 'left' else 1000
     while True:
         clock.tick(15)
         game_surface.blit(background_tugofwar_image, (0, 0))
-        # Draw Tug Button
         mx, my = scale_mouse_pos(*pygame.mouse.get_pos())
         if button_rect.collidepoint((mx, my)):
             color = button_hover_color
@@ -66,10 +67,11 @@ def tugofwar(freeplay=0):
         if current_time - last_bot_click >= bot_click_interval:
             tug_clicks[bot_team] += 1
             last_bot_click = current_time
-        bot_x = 200 if bot_team == 'left' else 1000
         game_surface.blit(bot_image, (bot_x, 320))
-        pos_xp = 200 if player1.team == 'left' else 1000
         game_surface.blit(player_image, (pos_xp, 320))
+        if freeplay == 0:
+            game_surface.blit(o_patch_image, (pos_xp, 376))
+            game_surface.blit(o_patch_image, (bot_x, 376))
         color = (0, 128, 255) if player1.team == 'left' else (255, 50, 50)
         team_text = font.render(f"Team: {player1.team.upper()}", True, color)
         game_surface.blit(team_text, (0, 0))
@@ -102,6 +104,7 @@ def tugofwar(freeplay=0):
             game_surface.blit(lose_text, (game_surface.get_width() // 2 - lose_text.get_width() // 2, 600))
             render_to_screen()
             sleep(3)
+            player1.voted = False
             from menus import mainmenu
             return mainmenu()
         render_to_screen()

@@ -1,5 +1,5 @@
 import pygame
-from assets import background_squidgame_image, knife_image, squidgame_voiceline1, squidgame_voiceline2, squidgame_voiceline3, rain_theme, finalist_suit_image
+from assets import background_squidgame_image, knife_image, squidgame_voiceline1, squidgame_voiceline2, squidgame_voiceline3, rain_theme, finalist_suit_image, o_patch_image
 from player import player_image, all_player_images, player1, reset_player, Player
 from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface
 from intro import play_intro_and_show_subtitles
@@ -216,11 +216,15 @@ def squidgame(freeplay=0):
         # Draw bot
         game_surface.blit(bot2_image, (bot.x, bot.y))
         game_surface.blit(finalist_suit_image, (bot.x, bot.y + 41))
+        if freeplay == 0:
+            game_surface.blit(o_patch_image, (bot.x, bot.y + 56))
         health_font = pygame.font.Font(font_path, 20)
         health_text = health_font.render(f"{int(bot.health)} HP", True, (255, 0, 0))
         game_surface.blit(health_text, (bot.x, bot.y - 20))
-        game_surface.blit(player_image, (player1.x, player1.y))  # Draw the player on the window
+        game_surface.blit(player_image, (player1.x, player1.y))
         game_surface.blit(finalist_suit_image, (player1.x, player1.y + 41))
+        if freeplay == 0:
+            game_surface.blit(o_patch_image, (player1.x, player1.y + 56))
         health_font = pygame.font.Font(font_path, 20)
         health_text = health_font.render(f"{int(player1.health)} HP", True, (255, 0, 0))
         game_surface.blit(health_text, (player1.x, player1.y - 20))
@@ -253,7 +257,6 @@ def squidgame(freeplay=0):
                 if sound_obj and not pygame.mixer.Channel(0).get_busy():
                     pygame.mixer.Channel(0).play(sound_obj)
                 break
-        # Draw subtitle
         if current_english:
             eng_surface = font_english.render(current_english, True, (255, 0, 0))
             kor_surface = font_korean.render(current_korean, True, (255, 255, 255))
@@ -265,6 +268,7 @@ def squidgame(freeplay=0):
             game_surface.blit(lose_text, (game_surface.get_width() // 2 - lose_text.get_width() // 2, 600))
             render_to_screen()
             sleep(3)
+            player1.voted = False
             rain_theme.stop()
             return mainmenu()
         elif bot.eliminated:
@@ -273,6 +277,7 @@ def squidgame(freeplay=0):
             game_surface.blit(win_text, (game_surface.get_width() // 2 - win_text.get_width() // 2, 600))
             render_to_screen()
             sleep(3)
+            player1.voted = False
             rain_theme.stop()
             play_intro_and_show_subtitles(7)
             return mainmenu()

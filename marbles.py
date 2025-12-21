@@ -43,6 +43,7 @@ def marbles(freeplay=0):
             game_surface.blit(text, ((game_surface.get_width() - text.get_width()) // 2, (game_surface.get_height() - text.get_height()) // 2))
             render_to_screen()
             sleep(5)
+            player1.voted = False
             marbles_theme.stop()
             from menus import mainmenu
             return mainmenu()

@@ -5,21 +5,20 @@ from random import randint, random, choice
 from time import time
 from math import sin, pi
 from sys import exit
-from assets import all_player_images, dormitory_image, knife_image, money, dorm
-from resize import is_fullscreen, toggle_fullscreen, handle_resize, render_to_screen, game_surface
+from assets import all_player_images, dormitory_image, knife_image, money, dorm, o_image, x_image, o_patch_image, voting_theme, o_sound, x_sound
+from resize import is_fullscreen, toggle_fullscreen, handle_resize, render_to_screen, game_surface, scale_mouse_pos
 import player_selected
 def lobby(message="Waiting for next game...", duration=20, lights=0):
     global player_image
     if player_selected.selected_index is not None:
         player_image = all_player_images[player_selected.selected_index]
-    money.play()
+    voting_theme.play(-1)
     player1.x = 0
     player1.y = 620
     font2 = pygame.font.Font(font_path, 36)
     small_font = pygame.font.Font(font_path, 24)
     prompt_font = pygame.font.Font(font_path, 40)
     health_font = pygame.font.Font(font_path, 20)
-    start_time = time()
     brightness_timer = 0
     brightness_cycle_duration = 120  # frames for full cycle (2 seconds at 60fps)
     min_brightness = 5  # darkest point (0-255)
@@ -32,7 +31,7 @@ def lobby(message="Waiting for next game...", duration=20, lights=0):
     last_key_pressed = None
     has_attacked = False
     player1.health = 100
-    bot = Player(0, 620)  # start position for bot
+    bot = Player(0, 620)
     bot.health = 100
     bot.knife_active = False
     bot.knife_direction = "left"
@@ -44,13 +43,27 @@ def lobby(message="Waiting for next game...", duration=20, lights=0):
     bot_attack_timer = 0
     bot_swing_counter = 0
     bot_move_direction = choice(["up", "down", "left", "right"])
+    started_timer = False
+    vote_prompt = prompt_font.render("Vote: X to Stop O to Continue", 1, (255, 0, 0))
+    voting = True
+    time_left1 = duration
+    brightness_factor = (sin(brightness_timer * 2 * pi / brightness_cycle_duration) + 1) / 2
+    current_brightness = int(min_brightness + (max_brightness - min_brightness) * brightness_factor)
+    brightness_surface = pygame.Surface(game_surface.get_size())
+    brightness_surface.set_alpha(255 - current_brightness)
+    brightness_surface.fill((0, 0, 0))
     clock = pygame.time.Clock()
     while True:
         clock.tick(60)
-        now = time()
-        elapsed = now - start_time
-        time_left1 = max(0, duration - int(elapsed))
-        if lights == 1:
+        if not voting:
+            if not started_timer:
+                start_time = time()
+                money.play()
+                started_timer = True
+            now = time()
+            elapsed = now - start_time
+            time_left1 = max(0, duration - int(elapsed))
+        if lights == 1 and not voting:
             brightness_timer += 1
             # Create sine wave oscillation for smooth brightness transition
             brightness_factor = (sin(brightness_timer * 2 * pi / brightness_cycle_duration) + 1) / 2
@@ -60,10 +73,30 @@ def lobby(message="Waiting for next game...", duration=20, lights=0):
             brightness_surface.set_alpha(255 - current_brightness)
             brightness_surface.fill((0, 0, 0))  # Black overlay
         game_surface.blit(dormitory_image, (0, 0))
+        if voting:
+            game_surface.blit(x_image, (50, 100))
+            game_surface.blit(o_image, (750, 100))
+            game_surface.blit(vote_prompt, (game_surface.get_width()//2 - vote_prompt.get_width()//2, 0))
         for event in pygame.event.get():
             match event.type: 
                 case pygame.QUIT:
                     exit()
+                case pygame.MOUSEBUTTONDOWN:
+                    if voting:
+                        o_rect = pygame.Rect(750, 100, 500, 500)
+                        x_rect = pygame.Rect(50, 100, 500, 500)
+                        mx, my = scale_mouse_pos(*event.pos)
+                        if o_rect.collidepoint(mx, my):
+                            player1.voted = True
+                            voting = False
+                            o_sound.play()
+                            voting_theme.stop()
+                        elif x_rect.collidepoint(mx, my):
+                            player1.voted = False
+                            x_sound.play()
+                            voting_theme.stop()
+                            from menus import mainmenu
+                            return mainmenu()
                 case pygame.VIDEORESIZE:
                     handle_resize(event.w, event.h)
                 case pygame.KEYDOWN:
@@ -71,18 +104,19 @@ def lobby(message="Waiting for next game...", duration=20, lights=0):
                         toggle_fullscreen()
                     elif event.key == pygame.K_ESCAPE and is_fullscreen:
                         toggle_fullscreen()
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_RIGHT]:
-            last_key_pressed = "right"
-            player1.x += 3
-            if player1.x > game_surface.get_width() - 50:
-                player1.x -= 3
-        elif keys[pygame.K_LEFT]:
-            last_key_pressed = "left"
-            player1.x -= 3
-            if player1.x < 0:
+        if not voting:
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_RIGHT]:
+                last_key_pressed = "right"
                 player1.x += 3
-        if lights == 1:
+                if player1.x > game_surface.get_width() - 50:
+                    player1.x -= 3
+            elif keys[pygame.K_LEFT]:
+                last_key_pressed = "left"
+                player1.x -= 3
+                if player1.x < 0:
+                    player1.x += 3
+        if lights == 1 and not voting:
             if keys[pygame.K_SPACE] and last_key_pressed is not None and swing_counter == 0:
                 player1.knife_active = True
                 has_attacked = True
@@ -176,23 +210,33 @@ def lobby(message="Waiting for next game...", duration=20, lights=0):
                     bot.knife_active = False
             if bot.health > 0:
                 game_surface.blit(bot2_image, (bot.x, bot.y))
+                game_surface.blit(o_patch_image, (bot.x, bot.y + 56))
                 health_text = health_font.render(f"{int(bot.health)} HP", True, (255, 0, 0))
                 game_surface.blit(health_text, (bot.x, bot.y - 20))
-            game_surface.blit(player_image, (player1.x, player1.y))  # Draw the player on the window
+            game_surface.blit(player_image, (player1.x, player1.y))
+            game_surface.blit(o_patch_image, (player1.x, player1.y + 56))
             health_text = health_font.render(f"{int(player1.health)} HP", True, (255, 0, 0))
             game_surface.blit(health_text, (player1.x, player1.y - 20))
             if not has_attacked:
                 prompt_text = prompt_font.render("Press SPACE to Attack", True, (255, 255, 255))
                 game_surface.blit(prompt_text, (game_surface.get_width() // 2 - prompt_text.get_width() // 2, 60))
             game_surface.blit(brightness_surface, (0, 0))
-        msg = font2.render(message, True, (255, 255, 255))
-        game_surface.blit(msg, (game_surface.get_width() // 2 - msg.get_width() // 2, 150))
-        minutes = time_left1 // 60
-        seconds = time_left1 % 60
-        timer_text = f"Next Game in {int(minutes):02}:{int(seconds):02}"
-        timer_surface = small_font.render(timer_text, True, (255, 0, 0))
-        game_surface.blit(timer_surface, (game_surface.get_width() // 2 - timer_surface.get_width() // 2, 20))
-        game_surface.blit(player_image, (player1.x, player1.y))
+        elif voting:
+            game_surface.blit(player_image, (player1.x, player1.y))
+            if player1.voted:
+                game_surface.blit(o_patch_image, (player1.x, player1.y + 56))
+        elif lights == 0:
+            game_surface.blit(player_image, (player1.x, player1.y))
+            if player1.voted:
+                game_surface.blit(o_patch_image, (player1.x, player1.y + 56))
+        if not voting:
+            msg = font2.render(message, True, (255, 255, 255))
+            game_surface.blit(msg, (game_surface.get_width() // 2 - msg.get_width() // 2, 150))
+            minutes = time_left1 // 60
+            seconds = time_left1 % 60
+            timer_text = f"Next Game in {int(minutes):02}:{int(seconds):02}"
+            timer_surface = small_font.render(timer_text, True, (255, 0, 0))
+            game_surface.blit(timer_surface, (game_surface.get_width() // 2 - timer_surface.get_width() // 2, 20))
         render_to_screen()
         if time_left1 <= 0:
             money.stop()

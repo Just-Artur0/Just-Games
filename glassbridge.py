@@ -1,5 +1,5 @@
 import pygame
-from assets import background_glassbridge_image, glass_image, marbles_theme, glassbridge_theme, glass_shatter, glassbridge_collapse
+from assets import background_glassbridge_image, glass_image, marbles_theme, glassbridge_theme, glass_shatter, glassbridge_collapse, o_patch_image
 from player import player_image, all_player_images, reset_player, player1
 from intro import play_intro_and_show_subtitles
 from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface, scale_mouse_pos
@@ -230,6 +230,8 @@ def glass_bridge(freeplay=0):
         if fall_y is not None:
             fall_y += 15
             game_surface.blit(player_image, (my_x + spacing, fall_y))
+            if freeplay == 0:
+                game_surface.blit(o_patch_image, (my_x + spacing, fall_y + 56))
         elif not player1.eliminated:
             # Highlight if it's player's turn
             if current_player == player1:
@@ -238,6 +240,8 @@ def glass_bridge(freeplay=0):
                 highlight.fill((0, 255, 0))
                 game_surface.blit(highlight, (my_x - 5, my_y - 5))
             game_surface.blit(player_image, (my_x, my_y))
+            if freeplay == 0:
+                game_surface.blit(o_patch_image, (my_x, my_y + 56))
         game_surface.blit(font.render(f"Step: {player1.glass_step}/{steps}", True, (255, 255, 255)), (50, 50))
         if current_player == player1:
             turn_text = "Your Turn!"
@@ -250,9 +254,10 @@ def glass_bridge(freeplay=0):
             if not death_started:
                 death_start_time = time()
                 death_started = True
-            game_surface.blit(font.render("You fell!", True, (255, 0, 0)), (450, 600))
+            game_surface.blit(font.render("You Fell!", True, (255, 0, 0)), (450, 600))
         if death_time_left <= 0:
             from menus import mainmenu
+            player1.voted = False
             glassbridge_theme.stop()
             return mainmenu()
         elif player1.glass_win:
@@ -284,6 +289,8 @@ def glass_bridge(freeplay=0):
                     highlight.fill((255, 255, 0))
                     game_surface.blit(highlight, (bot_x - 5, bot_y - 5))
                 game_surface.blit(all_player_images[bot.sprite_id], (bot_x, bot_y))
+                if freeplay == 0:
+                    game_surface.blit(o_patch_image, (bot_x, bot_y + 56))
         render_to_screen()
         for event in pygame.event.get():
             match event.type:
@@ -316,4 +323,5 @@ def glass_bridge(freeplay=0):
                         return squidgame(0)
                     case 1:
                         return mainmenu()
+            player1.voted = False
             return mainmenu()

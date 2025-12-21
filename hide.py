@@ -1,6 +1,6 @@
 import pygame
 from main import font_path
-from assets import key_image, hide_knife_image, door_image, hide_background_image, stairs_image, red_image, blue_image, hide_theme, unlock
+from assets import key_image, hide_knife_image, door_image, hide_background_image, stairs_image, red_image, blue_image, hide_theme, unlock, o_patch_image
 from intro import play_intro_and_show_subtitles
 from player import player_image, all_player_images, player1, reset_player, Player
 from resize import handle_resize, toggle_fullscreen, is_fullscreen, render_to_screen, game_surface
@@ -19,7 +19,6 @@ def hide(freeplay=0):
         player_image = all_player_images[player_selected.selected_index]
     play_intro_and_show_subtitles(14)
     hide_theme_channel = pygame.mixer.Channel(6)
-    run = True
     clock = pygame.time.Clock()
     floor1 = ["                                                                                                        ",
               "                                                                                                        ",
@@ -202,7 +201,7 @@ def hide(freeplay=0):
     ]
     font_korean = pygame.font.SysFont("malgungothic", 34)
     font_english = pygame.font.SysFont("Arial", 30)
-    while run:
+    while True:
         clock.tick(60)
         for event in pygame.event.get():
             match event.type:
@@ -449,6 +448,8 @@ def hide(freeplay=0):
                 game_surface.blit(blue_image, (player1.x - camera_x, player1.y + 37 - camera_y))
             case "red":
                 game_surface.blit(red_image, (player1.x - camera_x, player1.y + 37 - camera_y))
+        if freeplay == 0:
+            game_surface.blit(o_patch_image, (player1.x - camera_x, player1.y - camera_y + 56))
         if not bot.eliminated:
             game_surface.blit(bot2_image, (bot.x - camera_x, bot.y - camera_y))
             match bot_team:
@@ -458,6 +459,8 @@ def hide(freeplay=0):
                     game_surface.blit(blue_image, (bot.x - camera_x, bot.y + 37 - camera_y))
                     health_text = health_font.render(f"{int(bot.health)} HP", True, (255, 0, 0))
                     game_surface.blit(health_text, (bot.x - camera_x, bot.y - 20 - camera_y))
+            if freeplay == 0:
+                game_surface.blit(o_patch_image, (bot.x - camera_x, bot.y - camera_y + 56))
         if not has_attacked and team == "red":
             prompt_font = pygame.font.Font(font_path, 40)
             prompt_text = prompt_font.render("Press SPACE to Attack", True, (255, 255, 255))
@@ -505,6 +508,7 @@ def hide(freeplay=0):
             game_surface.blit(lose_text, (game_surface.get_width() // 2 - lose_text.get_width() // 2, 600))
             render_to_screen()
             sleep(3)
+            player1.voted = False
             return mainmenu()
         elif bot.eliminated:
             hide_theme_channel.stop()

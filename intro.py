@@ -8,7 +8,7 @@ from assets import ddakji_background1_image, ddakji_background2_image, ddakji_ba
 from assets import ddakji_background7_image, ddakji_background8_image, ddakji_background9_image, ddakji_background10_image, ddakji_background11_image, ddakji_background12_image, ddakji_background13_image
 from assets import doll_image, doll_forward_image, intro_voice, dalgona_intro_voice, tugofwar_intro_voice, marbles_intro_voice, glassbridge_intro_voice, squidgame_intro_voice, squidgame_end
 from assets import pentathlon_intro_voice, story_ddakji_intro_voice, story_ddakji_firstfail, story_ddakji_secondfail, story_ddakji_win, mingle_intro_voice, hide_intro_voice, hide_background1_image
-from assets import hide_background2_image, jump_intro_voice, jump_background2_image
+from assets import hide_background2_image, jump_intro_voice, jump_background2_image, sky_intro_voice, sky_background_image
 from resize import game_surface, is_fullscreen, handle_resize, toggle_fullscreen, render_to_screen
 def play_intro_and_show_subtitles(sub_num=1):
     match sub_num: 
@@ -597,6 +597,66 @@ def play_intro_and_show_subtitles(sub_num=1):
                 "Now, let the game begin.", 
                 4000, jump_background2_image),
             ]
+        case 16: #sky squid game intro
+            subtitles = [
+                ("결승전에 참여해주신 모든 분들을 진심으로 환영합니다.", 
+                "A warm welcome to all of you for joining the final game.", 
+                6000, sky_background_image),
+                ("마지막 게임은 스카이 스퀴드 게임입니다.", 
+                "The final game is Sky Squid Game.", 
+                5000, sky_background_image),
+                ("게임 규칙은 다음과 같습니다.", 
+                "Here are the rules of the game.", 
+                5000, sky_background_image),
+                ("플레이어들은 사각형, 삼각형, 원형 ​​탑에서 게임을 진행합니다.", 
+                "Players will play on the square, triangle, and circle towers.", 
+                6000, sky_background_image),
+                ("여러분은 이 세 기둥을 중심으로 밀고 당기는 게임을 하게 될 것입니다.", 
+                "You will play a pushing game on these three pillars.", 
+                6000, sky_background_image),
+                ("첫 번째 라운드는 현재 여러분이 있는 사각형 탑에서 진행됩니다.", 
+                "The first round will be played on the square tower you are currently on.", 
+                4000, sky_background_image),
+                ("한 명 이상의 플레이어를 탑에서 밀어 떨어뜨리면", 
+                "If you push one or more players off the tower", 
+                3000, sky_background_image),
+                ("그들이 아직 살아 있는 동안,", 
+                "while they are still alive,", 
+                2000, sky_background_image),
+                ("남은 모든 플레이어는 다음 라운드를 위해 삼각형 탑으로 이동합니다.", 
+                "all remaining players will move on to the triangle tower for the next round.", 
+                5000, sky_background_image),
+                ("마찬가지로, 한 명 이상의 플레이어를 탈락시키는 경우에도 마찬가지입니다.", 
+                "Likewise, if you eliminate one or more players", 
+                3000, sky_background_image),
+                ("두 번째 라운드의 삼각형 탑에서,", 
+                "on the triangle tower in the second round,", 
+                4000, sky_background_image),
+                ("이제 원형 탑으로 이동하시게 됩니다.", 
+                "you will move on to the circle tower.", 
+                3000, sky_background_image),
+                ("원형 탑에서의 마지막 라운드에도 동일하게 적용됩니다.", 
+                "The same applies to the final round on the circle tower.", 
+                3000, sky_background_image),
+                ("한 명 이상의 선수를 밀어내면,", 
+                "If you push one or more players off,", 
+                2000, sky_background_image),
+                ("탑에 남아 있는 모든 사람이 최종 승자가 될 것입니다.", 
+                "everyone remaining on the tower will be the final winners.", 
+                5000, sky_background_image),
+                ("꼭 기억해 주세요", 
+                "Please keep in mind", 
+                2000, sky_background_image),
+                ("제한 시간 내에 아무도 탈락시키지 못하면,", 
+                "that if you do not eliminate anyone within the time limit,", 
+                5000, sky_background_image),
+                ("탑 위에 있는 모든 사람이 제거될 것이다.", 
+                "everyone on the tower will be eliminated.", 
+                3000, sky_background_image),
+                ("첫 번째 라운드를 시작하려면 바닥에 있는 버튼을 눌러주세요.", 
+                "Please press the button on the ground to start the first round.", 
+                7000, sky_background_image),
+            ]
     intro_voice_channel = pygame.mixer.Channel(7)
     match sub_num:
         case 1:
@@ -629,6 +689,8 @@ def play_intro_and_show_subtitles(sub_num=1):
             intro_voice_channel.play(hide_intro_voice)
         case 15:
             intro_voice_channel.play(jump_intro_voice)
+        case 16:
+            intro_voice_channel.play(sky_intro_voice)
     font_korean = pygame.font.SysFont("malgungothic", 34)
     font_english = pygame.font.SysFont("Arial", 30)
     clock = pygame.time.Clock()
@@ -657,8 +719,8 @@ def play_intro_and_show_subtitles(sub_num=1):
             # Draw subtitles
             kr_text = font_korean.render(kr, True, (255, 255, 255))
             en_text = font_english.render(en, True, (255, 0, 0))
-            game_surface.blit(kr_text, (game_surface.get_width()//2 - kr_text.get_width()//2, 600))
-            game_surface.blit(en_text, (game_surface.get_width()//2 - en_text.get_width()//2, 640))
+            game_surface.blit(kr_text, (game_surface.get_width()//2 - kr_text.get_width()//2, 560))
+            game_surface.blit(en_text, (game_surface.get_width()//2 - en_text.get_width()//2, 600))
             render_to_screen()
             # Wait for the specific duration
             if now - start_time >= duration:

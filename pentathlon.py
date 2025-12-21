@@ -23,7 +23,6 @@ def six_legged_pentathlon(freeplay=0):
             player_image = all_player_images[sprite_id]
     else:
         player_image = all_player_images[player_selected.selected_index]
-    run = True
     clock = pygame.time.Clock()
     WHITE = (255, 255, 255)
     RED = (255, 0, 0)
@@ -151,13 +150,26 @@ def six_legged_pentathlon(freeplay=0):
             PENTATHLON_DURATION = 311
         case _:
             PENTATHLON_DURATION = 308
+    match player_selected.selected_index: 
+        case 1:
+            PENTATHLON_DURATION = 311
+        case 12:
+            PENTATHLON_DURATION = 311
+        case 13:
+            PENTATHLON_DURATION = 311
+        case 14:
+            PENTATHLON_DURATION = 311
+        case 19:
+            PENTATHLON_DURATION = 311
+        case _:
+            PENTATHLON_DURATION = 308
     if PENTATHLON_DURATION == 311:
         pentathlon_channel.play(pentathlon_champion_theme, -1)
     else:
         pentathlon_channel.play(pentathlon_theme, -1)
     pentathlon_time_left = PENTATHLON_DURATION
     pentathlon_start_time = time()
-    while run:
+    while True:
         clock.tick(25)
         game_surface.blit(start_station_image, (0, 0))
         elapsed = time() - pentathlon_start_time
@@ -804,6 +816,7 @@ def six_legged_pentathlon(freeplay=0):
             game_surface.blit(lose_text, (game_surface.get_width() // 2 - lose_text.get_width() // 2, 600))
             render_to_screen()
             sleep(3)
+            player1.voted = False
             from menus import mainmenu
             return mainmenu()
         # Draw countdown timer

@@ -1,7 +1,7 @@
 import pygame
 from assets import redlight_button_image, dalgona_button_image, tugofwar_button_image, marbles_button_image, justgame_image, freeplay_image, storymode_image, pentathlon_button_image, season3_button_image
 from assets import glass_bridge_button_image, squidgame_button_image, mingle_button_image, back_image, maintheme, season1_button_image, season2_button_image, hide_button_image, jumprope_button_image
-from assets import playerselect_image
+from assets import playerselect_image, sky_button_image
 from resize import handle_resize, toggle_fullscreen, scale_mouse_pos, render_to_screen, game_surface, is_fullscreen
 from button import Button
 from sys import exit
@@ -15,6 +15,7 @@ from pentathlon import six_legged_pentathlon
 from mingle import mingle
 from hide import hide
 from jumprope import jumprope
+from sky import sky
 def mainmenu():
     maintheme.play(-1)
     justgame = Button(500, 250, justgame_image)
@@ -78,9 +79,10 @@ def freeplay_menu(menu=0):
             buttons = [
                 Button(200, 100, hide_button_image),
                 Button(200, 100, jumprope_button_image),
+                Button(200, 100, sky_button_image),
                 Button(200, 100, back_image)
             ]
-            positions = [(200, 150), (450, 150), (0, 0)]
+            positions = [(200, 150), (450, 150), (700, 150), (0, 0)]
     clock = pygame.time.Clock()
     while True:
         clock.tick(10)
@@ -126,12 +128,14 @@ def freeplay_menu(menu=0):
                                         case 1:
                                             return mingle(1)
                                         case 2:
-                                            return mainmenu()
+                                            return sky(1)
                                 case 3:
                                     match menu:
                                         case 0:
                                             return marbles(1)
                                         case 1:
+                                            return mainmenu()
+                                        case 2:
                                             return mainmenu()
                                 case 4:
                                     return glass_bridge(1)
