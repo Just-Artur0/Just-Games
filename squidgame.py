@@ -98,21 +98,21 @@ def squidgame(freeplay=0):
                             speed = randint(4, 10)
                             rain_drops.append([x, y, speed])
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             last_key_pressed = "right"
             player1.x += 3
             if player1.x > 1230:
                 player1.x -= 3
-        elif keys[pygame.K_LEFT]:
+        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
             last_key_pressed = "left"
             player1.x -= 3
             if player1.x < 0:
                 player1.x += 3
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
             player1.y -= 3
             if player1.y < 0:
                 player1.y += 3
-        elif keys[pygame.K_DOWN]:
+        elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             player1.y += 3
             if player1.y > 620:
                 player1.y -= 3

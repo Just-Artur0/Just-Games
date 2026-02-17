@@ -106,12 +106,12 @@ def lobby(message="Waiting for next game...", duration=20, lights=0):
                         toggle_fullscreen()
         if not voting:
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_RIGHT]:
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 last_key_pressed = "right"
                 player1.x += 3
                 if player1.x > game_surface.get_width() - 50:
                     player1.x -= 3
-            elif keys[pygame.K_LEFT]:
+            elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 last_key_pressed = "left"
                 player1.x -= 3
                 if player1.x < 0:

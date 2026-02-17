@@ -572,15 +572,15 @@ def sky(freeplay=0):
         elif square_started and square_time_left <= 0 and not square_elimination_happened:
             player1.eliminated = True
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             player1.x -= 5
             direction = -1
-        elif keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             player1.x += 5
             direction = 1
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
             player1.y -= 5
-        elif keys[pygame.K_DOWN]:
+        elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             player1.y += 5
         if keys[pygame.K_e] and pole1_pickable:
             pole1_picked = True

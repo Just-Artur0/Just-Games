@@ -85,11 +85,11 @@ def redlight(freeplay=0):
         keys = pygame.key.get_pressed()
         can_move = (not doll1.is_forward) or (not recently_shot)
         if can_move:
-            if keys[pygame.K_RIGHT]:
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 player1.x += 1
                 if player1.x > 1230:
                     player1.x -= 1
-            if keys[pygame.K_LEFT]:
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 player1.x -= 1
                 if player1.x < 0:
                     player1.x += 1

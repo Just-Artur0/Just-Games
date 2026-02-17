@@ -301,19 +301,19 @@ def mingle(freeplay=0):
             if not bot.eliminated:
                 bot.update_movement(door_positions, current_round, bots, player1, alive_count)
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             player1.x += 5
             if player1.x > game_surface.get_width() - 50:
                 player1.x -= 5
-        elif keys[pygame.K_LEFT]:
+        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
             player1.x -= 5
             if player1.x < 0:
                 player1.x += 5
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
             player1.y -= 5
             if player1.y < 0:
                 player1.y += 5
-        elif keys[pygame.K_DOWN]:
+        elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             player1.y += 5
             if player1.y > game_surface.get_height() - 100:
                 player1.y -= 5

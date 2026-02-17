@@ -104,9 +104,9 @@ def jumprope(freeplay=0):
         camera_x = player1.x - game_surface.get_width() // 2
         camera_y = player1.y - game_surface.get_height() // 2
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             dx = -5
-        elif keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             dx = 5
         else:
             dx = 0
