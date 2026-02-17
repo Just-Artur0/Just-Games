@@ -13,7 +13,18 @@
 - Images from Netflix, Compressed with https://tinyjpg.com/ and https://tinypng.com/
 - Music - Netflix (Jung Jae-il)
 # Controls
-- LEFT KEY - left
-- RIGHT KEY - right
+- LEFT KEY, a - left
+- RIGHT KEY, d - right
+- UP KEY, w - up
+- DOWN KEY, s - down
 - SPACE - action
 - MOUSELEFTBUTTON - select
+# Running
+- Make sure you have pygame installed (pip install pygame)
+- Open the main.py file
+# Packaging with Pyinstaller
+- Make sure you have pyinstaller installed (pip install pyinstaller)
+- go to cmd and go to the folder with all the files and folders (cd path/to/folder)
+- run the pyinstaller command (pyinstaller main.spec)
+- after a while the game will be an .exe in dist/JustGames folder
+- Make sure you copy the folders Fonts Images Music to the dist/JustGames Folder
